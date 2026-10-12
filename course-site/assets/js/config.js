@@ -2,6 +2,14 @@
  * Everything a seller needs to change lives here and nowhere else.
  */
 window.COURSE_CONFIG = {
+  // ── PREVIEW SWITCH ────────────────────────────────────────────────────
+  // true  = open preview: no sign-in, no Stripe, progress saved in the
+  //         browser only, question sending off. Anyone can browse the
+  //         whole course.
+  // false = live mode: Netlify Identity sign-in and Stripe checkout on.
+  // Flip this one flag and redeploy to switch between the two.
+  demoMode: true,
+
   // ── Branding ──────────────────────────────────────────────────────────
   brand: {
     // Your business name, shown in the header and on the certificate.

@@ -64,13 +64,18 @@
   function defaultProgress() { return { lessons: {}, quizzes: {}, worksheets: {} }; }
 
   async function loadProgress() {
-    try {
-      state.progress = await api("progress");
-      if (!state.progress || typeof state.progress !== "object") state.progress = defaultProgress();
-      localStorage.setItem(cacheKey(), JSON.stringify(state.progress));
-    } catch (e) {
+    if (CFG.demoMode) {
       const cached = localStorage.getItem(cacheKey());
       state.progress = cached ? JSON.parse(cached) : defaultProgress();
+    } else {
+      try {
+        state.progress = await api("progress");
+        if (!state.progress || typeof state.progress !== "object") state.progress = defaultProgress();
+        localStorage.setItem(cacheKey(), JSON.stringify(state.progress));
+      } catch (e) {
+        const cached = localStorage.getItem(cacheKey());
+        state.progress = cached ? JSON.parse(cached) : defaultProgress();
+      }
     }
     ["lessons", "quizzes", "worksheets"].forEach((k) => {
       if (!state.progress[k]) state.progress[k] = {};
@@ -79,6 +84,7 @@
 
   function saveProgress() {
     localStorage.setItem(cacheKey(), JSON.stringify(state.progress));
+    if (CFG.demoMode) return; // preview: browser storage only
     clearTimeout(saveTimer);
     saveTimer = setTimeout(async () => {
       if (!state.user) return;
@@ -109,6 +115,12 @@
   }
 
   async function refreshAccess() {
+    if (CFG.demoMode) {
+      const saved = localStorage.getItem("awspp-demo-access");
+      state.access = saved ? JSON.parse(saved) : { tier: "preview" };
+      await loadProgress();
+      return;
+    }
     try {
       state.access = await api("access");
     } catch (e) {
@@ -118,6 +130,7 @@
   }
 
   function hasAccess() {
+    if (CFG.demoMode) return !!state.user;
     return !!(state.user && state.access && state.access.tier);
   }
 
@@ -206,99 +219,75 @@
 
   function viewLanding() {
     const brand = CFG.brand;
-    const overview = CONTENT.classes.length + " classes";
+    const demo = CFG.demoMode;
+    const heroCta = demo
+      ? '<a class="btn btn-primary" href="#/learn">Start the course</a><a class="btn btn-outline-light" href="#/inside">See what is inside</a>'
+      : (state.user
+          ? (hasAccess()
+            ? '<a class="btn btn-primary" href="#/learn">Continue your course</a>'
+            : '<a class="btn btn-primary" href="#/redeem">Redeem your access code</a>')
+          : '<a class="btn btn-primary" href="#/buy">Buy access</a><button class="btn btn-outline-light" id="hero-login">Sign in</button>');
     return `
     <header class="hero">
       <div class="hero-inner">
         <p class="hero-kicker">Plain-language AI training for Australian small business</p>
         <h1>${esc(brand.courseTitle)}</h1>
-        <p class="tagline">${esc(brand.courseTagline)}</p>
-        <div class="hero-cta">
-          ${state.user
-            ? (hasAccess()
-              ? '<a class="btn btn-primary" href="#/learn">Continue your course</a>'
-              : '<a class="btn btn-primary" href="#/redeem">Redeem your access code</a>')
-            : '<a class="btn btn-primary" href="#/buy">Buy access</a><button class="btn btn-outline-light" id="hero-login">Sign in</button>'}
-        </div>
+        <p class="tagline">You have heard the word "AI" four thousand times. Nobody has sat you down and explained what it actually does on your laptop on a Tuesday afternoon. This course does that, in plain Australian English, with the paperwork to prove it.</p>
+        <div class="hero-cta">${heroCta}</div>
         <ul class="hero-chips">
-          <li>${overview}, self-paced</li>
-          <li>10-document business pack</li>
-          <li>Quizzes, worksheets &amp; certificate</li>
-          <li>Human Q&amp;A included</li>
+          <li>Six classes, 15 to 25 minutes each</li>
+          <li>Ten documents you can use on Monday</li>
+          <li>Quizzes, worksheets and a certificate</li>
+          <li>A human answers your questions</li>
         </ul>
-        <p class="hero-note">Read it in an evening or spread it over six weeks. Every document downloads pre-filled with your business name.</p>
+        <p class="hero-note">${demo
+          ? "This is the open preview: accounts and payments are switched off, so look through everything. Your progress is saved in this browser."
+          : "Read it in an evening or spread it over six weeks. Every document downloads pre-filled with your business name."}</p>
       </div>
     </header>
 
     <section class="band">
       <div class="wrap">
-        <span class="eyebrow">What you get</span>
-        <h2>Everything, and nothing that wastes your time</h2>
-        <p class="section-lede">Built for owners, office managers and team leads who have heard "AI" four thousand times and still want to know what it does on a Tuesday afternoon.</p>
+        <span class="eyebrow">Who it is for</span>
+        <h2>Written for people who run things, not for tech people</h2>
+        <p class="section-lede">If you can attach a file to an email, you have every skill this course assumes. There is no coding in it and no homework you will not do.</p>
         <div class="grid grid-3">
           <div class="card feature-card">
-            <h3>${overview}, click-through</h3>
-            <p>From "a model is a stack of numbers" to a one-week governance rollout for your team. Plain Australian English, no jargon without an immediate translation, no breathless enthusiasm.</p>
+            <h3>If you run the business</h3>
+            <p>You will leave able to answer the only two questions that matter: what is staff allowed to paste into these tools, and what does a vendor's demo actually prove. You get a one-page policy and a one-week rollout plan for the team.</p>
           </div>
           <div class="card feature-card">
-            <h3>10 ready-to-use documents</h3>
-            <p>System prompt templates, a shadow AI policy you can hand to staff today, prompting cheat sheet, data security basics with opt-out steps per platform, tool comparison matrix, incident response card, and more.</p>
+            <h3>If you manage the office</h3>
+            <p>You get the documents: the cheat sheet on the wall, the incident card by the coffee machine, and the meeting-to-follow-up workflow that ends "I will type these notes up tonight" forever.</p>
           </div>
           <div class="card feature-card">
-            <h3>Quizzes, worksheets, certificate</h3>
-            <p>A short self-marked quiz at the end of every class, a guided worksheet that turns each exercise into a plan for your own business, and a printable certificate for the team wall.</p>
-          </div>
-          <div class="card feature-card">
-            <h3>Ask a real human</h3>
-            <p>Stuck on something specific to your business? Ask from any screen. Your question lands in our inbox and the reply appears back here in your course. No forums, no bots: a person answers.</p>
-          </div>
-          <div class="card feature-card">
-            <h3>Honest about vendors</h3>
-            <p>Named case studies of AI marketing that did not survive contact with reality, plus current pricing and data policies for ChatGPT, Claude, Gemini, Copilot and local models, each with a verified date.</p>
-          </div>
-          <div class="card feature-card">
-            <h3>Built for Australian business</h3>
-            <p>Privacy Act obligations in practical terms: cross-border data, the December 2026 automated-decision rules, notifiable breaches, and what "reasonable steps" look like for a ten-person team.</p>
+            <h3>If you are on the tools or the front desk</h3>
+            <p>Short classes you can finish on a lunch break, explanations that never say "simply", and a certificate at the end worth putting on the wall. Bring your scepticism; the course keeps it.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="band band-dark">
+    <section class="band band-alt" id="inside">
       <div class="wrap">
-        <span class="eyebrow">How it works</span>
-        <h2 style="color:#fff">Four steps from checkout to rollout</h2>
-        <div class="steps" style="margin-top:36px">
-          <div class="step">
-            <h3>Buy and redeem</h3>
-            <p>Pay by card through Stripe, get your access code instantly, create an account and unlock the course.</p>
-          </div>
-          <div class="step">
-            <h3>Learn at your pace</h3>
-            <p>Six classes, fifteen to twenty-five minutes each. Progress saves to your account, so any device picks up where you left off.</p>
-          </div>
-          <div class="step">
-            <h3>Download the pack</h3>
-            <p>Add your business name once in your profile; all ten documents print or download with it pre-filled.</p>
-          </div>
-          <div class="step">
-            <h3>Roll it out</h3>
-            <p>Class 6 is a one-week plan: policy, approved tools, toolbox talk, incident card on the wall.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="band band-alt">
-      <div class="wrap">
-        <span class="eyebrow">Curriculum</span>
-        <h2>The six classes</h2>
+        <span class="eyebrow">Outcomes</span>
+        <h2>By the end of the six classes you can</h2>
+        <ul class="outcomes">
+          <li>Explain what an AI model is, and what it is not, in two sentences a customer would follow.</li>
+          <li>Read a vendor's claims and separate today's working software from next year's brochure, using named real-world cases.</li>
+          <li>Say where your data goes when you type it into a chatbot, and pick the tier or tool to match, including the opt-out settings on each platform.</li>
+          <li>Write requests that come back usable on the first or second try, and set up standing instructions so the tool already knows your business.</li>
+          <li>Put the collapsed cost of custom software to work on one annoying process of your own, with honest boundaries on what to build.</li>
+          <li>Hand your team a one-page AI policy and a same-day incident plan, and mean both.</li>
+        </ul>
+        <span class="eyebrow" style="margin-top:44px">The classes</span>
+        <h2>Six evenings' worth, at your pace</h2>
         <ol class="curriculum">
           ${CONTENT.classes.map((c, i) => `
             <li><div><strong>Class ${i + 1}: ${esc(c.title.replace(/^Class \d+:\s*/i, ""))}</strong>
             <span>${esc(c.subtitle || "")}</span></div></li>`).join("")}
         </ol>
-        <span class="eyebrow" style="margin-top:48px">Included downloads</span>
+        <span class="eyebrow" style="margin-top:44px">Included downloads</span>
         <h2>The ten-document pack</h2>
         <div class="doc-grid">
           ${CONTENT.docs.map((d, i) => `
@@ -307,12 +296,39 @@
       </div>
     </section>
 
+    <section class="band band-dark">
+      <div class="wrap">
+        <span class="eyebrow">How it works</span>
+        <h2 style="color:#fff">Four steps, no ceremony</h2>
+        <div class="steps" style="margin-top:36px">
+          <div class="step">
+            <h3>${demo ? "Open the course" : "Buy and redeem"}</h3>
+            <p>${demo ? "In this preview you walk straight in. In the live course you pay by card, get an access code and create an account." : "Pay by card through Stripe, get your access code instantly, create an account and unlock the course."}</p>
+          </div>
+          <div class="step">
+            <h3>Read a class</h3>
+            <p>Fifteen to twenty-five minutes each. Progress saves to your account, so any device picks up where you left off.</p>
+          </div>
+          <div class="step">
+            <h3>Do the worksheet</h3>
+            <p>Each class exercise becomes a plan for your own business, filled in on screen and printable.</p>
+          </div>
+          <div class="step">
+            <h3>Take the documents</h3>
+            <p>Add your business name once; all ten print or download with it pre-filled. Pass the quizzes and the certificate unlocks.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="band" id="buy">
       <div class="wrap">
         <div style="text-align:center">
           <span class="eyebrow">Licences</span>
-          <h2>Choose your licence</h2>
-          <p class="section-lede" style="margin-left:auto;margin-right:auto">One-time payment. Lifetime access, including refreshed pricing and platform data. Payment handled securely by Stripe.</p>
+          <h2>${demo ? "What the licences will be" : "Choose your licence"}</h2>
+          <p class="section-lede" style="margin-left:auto;margin-right:auto">${demo
+            ? "Payments are switched off in this preview. These are the two licences the live course sells, so you can see what your money buys."
+            : "One-time payment. Lifetime access, including refreshed pricing and platform data. Payment handled securely by Stripe."}</p>
         </div>
         <div class="grid grid-2 price-grid">
           <div class="card price-card">
@@ -326,9 +342,11 @@
               <li>Ask-a-question, answered by a human</li>
               <li>Lifetime access including content refreshes</li>
             </ul>
-            ${CFG.stripe.individualLink
-              ? '<a class="btn btn-dark" href="' + esc(CFG.stripe.individualLink) + '">Buy individual access</a>'
-              : '<p class="fine">Checkout link not configured yet.</p>'}
+            ${demo
+              ? '<a class="btn btn-dark" href="#/learn">Look through it now</a>'
+              : (CFG.stripe.individualLink
+                ? '<a class="btn btn-dark" href="' + esc(CFG.stripe.individualLink) + '">Buy individual access</a>'
+                : '<p class="fine">Checkout link not configured yet.</p>')}
           </div>
           <div class="card price-card featured">
             <h3>Whole business</h3>
@@ -341,12 +359,41 @@
               <li>The one-week rollout plan sized for up to ~50 staff</li>
               <li>Ideal for owner + office manager + team leads</li>
             </ul>
-            ${CFG.stripe.businessLink
-              ? '<a class="btn btn-primary" href="' + esc(CFG.stripe.businessLink) + '">Buy business access</a>'
-              : '<p class="fine">Checkout link not configured yet.</p>'}
+            ${demo
+              ? '<a class="btn btn-primary" href="#/learn">Look through it now</a>'
+              : (CFG.stripe.businessLink
+                ? '<a class="btn btn-primary" href="' + esc(CFG.stripe.businessLink) + '">Buy business access</a>'
+                : '<p class="fine">Checkout link not configured yet.</p>')}
           </div>
         </div>
-        <p class="fine center" style="margin-top:26px">Already bought? <a href="#/redeem">Redeem your access code</a>. Problems with purchase or access: email <a href="mailto:${esc(brand.supportEmail)}">${esc(brand.supportEmail)}</a>.</p>
+        ${demo
+          ? '<p class="fine center" style="margin-top:26px">Preview build: no account, no card, no data leaving your browser. Switch to the live course any time by flipping one setting.</p>'
+          : '<p class="fine center" style="margin-top:26px">Already bought? <a href="#/redeem">Redeem your access code</a>. Problems with purchase or access: email <a href="mailto:' + esc(brand.supportEmail) + '">' + esc(brand.supportEmail) + '</a>.</p>'}
+      </div>
+    </section>
+
+    <section class="band band-alt">
+      <div class="wrap" style="max-width:820px">
+        <span class="eyebrow">Fair questions</span>
+        <h2>Asked before, answered plainly</h2>
+        <div class="faq">
+          <div class="faq-item">
+            <h3>Do I need to be technical?</h3>
+            <p>No. The class about building software is about deciding what to build and checking it, not typing code. Every technical word in the course is translated in the same sentence, in brackets.</p>
+          </div>
+          <div class="faq-item">
+            <h3>How long does it take?</h3>
+            <p>Six classes of fifteen to twenty-five minutes, plus a worksheet and a five-question quiz each. One evening if you are keen. Six lunch breaks if you are sensible.</p>
+          </div>
+          <div class="faq-item">
+            <h3>Is this a sales pitch for one of the AI companies?</h3>
+            <p>The opposite. The course compares every major tool, names each one's weaknesses, and teaches you to hold any vendor to evidence, us included. The money is in the course, not in referrals.</p>
+          </div>
+          <div class="faq-item">
+            <h3>What if the pricing and policy information goes stale?</h3>
+            <p>It will, eventually, and the course says so out loud. Documents 5 and 6 carry a "last verified" date and a quarterly review routine, and your licence includes refreshes, so you always know how old the numbers are.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -585,13 +632,15 @@
   function viewQa() {
     return shell(`
       <h1>Ask a question</h1>
-      <p>Questions go straight to ${esc(CFG.brand.sellerName)}. Replies appear below in your course, and we answer every question, usually within one business day.</p>
+      ${CFG.demoMode
+        ? '<p class="demo-note">Preview mode: question sending is switched off in this build. In the live course your question goes straight to ' + esc(CFG.brand.sellerName) + ', and the reply appears right here in your course, usually within one business day.</p>'
+        : '<p>Questions go straight to ' + esc(CFG.brand.sellerName) + '. Replies appear below in your course, and we answer every question, usually within one business day.</p>'}
       <form id="qa-form" class="stack-form">
         <label class="field"><span class="field-label">Your question</span>
-          <textarea id="qa-text" rows="6" required placeholder="e.g. We're a 12-person bookkeeping firm on Google Workspace. Is the Gemini bundling enough, or should we also buy Claude Team seats for client documents?"></textarea></label>
+          <textarea id="qa-text" rows="6" ${CFG.demoMode ? "disabled" : "required"} placeholder="e.g. We're a 12-person bookkeeping firm on Google Workspace. Is the Gemini bundling enough, or should we also buy Claude Team seats for client documents?"></textarea></label>
         <label class="field"><span class="field-label">What are you working on? (optional)</span>
-          <input id="qa-context" type="text" placeholder="auto-filled when you ask from a lesson"></label>
-        <button class="btn btn-primary" type="submit">Send question</button>
+          <input id="qa-context" type="text" ${CFG.demoMode ? "disabled" : ""} placeholder="auto-filled when you ask from a lesson"></label>
+        <button class="btn btn-primary" type="submit" ${CFG.demoMode ? "disabled" : ""}>${CFG.demoMode ? "Sending off in preview" : "Send question"}</button>
       </form>
       <h2>Your questions</h2>
       <div id="qa-list">${(state.qaThreads || []).length
@@ -706,13 +755,15 @@
     const param = m && m[2] != null ? parseInt(m[2], 10) : null;
     let html = "";
 
-    if (section === "code") {
+    if (CFG.demoMode && (section === "redeem" || section === "code")) {
+      html = viewLearn();
+    } else if (section === "code") {
       html = viewCodeIssued(sessionStorage.getItem("issued-code") || "(reload from your confirmation page)", sessionStorage.getItem("issued-tier") || "");
     } else if (!hasAccess()) {
       if (section === "redeem" && state.user) html = viewRedeem();
       else if (section === "buy") { html = viewLanding(); }
       else html = viewLanding();
-    } else if (section === "" ) html = viewLearn();
+    } else if (section === "" ) html = CFG.demoMode ? viewLanding() : viewLearn();
     else if (section === "learn") html = viewLearn();
     else if (section === "class") html = viewClass(param);
     else if (section === "docs") html = viewDocs();
@@ -874,16 +925,23 @@
     const pf = $("#profile-form");
     if (pf) pf.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const fields = {
+        learnerName: $("#pf-learner").value.trim(),
+        businessName: $("#pf-business").value.trim(),
+        contactName: $("#pf-contact").value.trim(),
+        contactEmail: $("#pf-contactdetail").value.trim(),
+      };
+      if (CFG.demoMode) {
+        state.access = { ...state.access, ...fields };
+        localStorage.setItem("awspp-demo-access", JSON.stringify(state.access));
+        toast("Saved for this preview. Accounts switch on in the live build.");
+        return;
+      }
       try {
         await api("access", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            learnerName: $("#pf-learner").value.trim(),
-            businessName: $("#pf-business").value.trim(),
-            contactName: $("#pf-contact").value.trim(),
-            contactEmail: $("#pf-contactdetail").value.trim(),
-          }),
+          body: JSON.stringify(fields),
         });
         await refreshAccess();
         toast("Profile saved. Documents will now use your business name.");
@@ -968,7 +1026,7 @@
 
   // ── Q&A loading & polling ─────────────────────────────────────────────
   async function loadQa() {
-    if (!hasAccess()) return;
+    if (!hasAccess() || CFG.demoMode) { state.qaThreads = []; return; }
     try {
       const res = await api("qa");
       state.qaThreads = res.threads || [];
@@ -1018,10 +1076,19 @@
     const rootStyle = document.documentElement.style;
     rootStyle.setProperty("--primary", CFG.colors.primary);
     rootStyle.setProperty("--accent", CFG.colors.accent);
-    $$(".seller-name-slot").forEach((n) => (n.textContent = CFG.brand.sellerName));
+    Array.prototype.forEach.call(document.querySelectorAll(".seller-name-slot"), (n) => (n.textContent = CFG.brand.sellerName));
     document.title = CFG.brand.courseTitle + " by " + CFG.brand.sellerName;
 
-    if (window.netlifyIdentity) {
+    if (CFG.demoMode) {
+      // Preview build: no Identity, no Stripe. One synthetic local user,
+      // progress in localStorage, question sending disabled in the view.
+      document.body.classList.add("demo", "signed-in");
+      const chip = document.getElementById("tb-demo");
+      if (chip) chip.classList.remove("hidden");
+      state.user = { id: "demo", email: "preview@localhost" };
+      await refreshAccess();
+      route();
+    } else if (window.netlifyIdentity) {
       window.netlifyIdentity.on("init", (user) => {
         state.user = user;
         if (user) {

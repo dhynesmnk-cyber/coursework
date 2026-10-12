@@ -37,6 +37,7 @@
       <span class="brand-text">AI Without the Sales Pitch</span>
     </a>
     <span class="seller-slot"><span class="seller-name-slot"></span></span>
+    <span class="tb-chip hidden" id="tb-demo">Preview mode</span>
     <span class="spacer"></span>
     <span class="auth-signed-out">
       <button class="tb-btn" onclick="netlifyIdentity.open('login')">Sign in</button>
@@ -45,7 +46,7 @@
     <span class="auth-signed-in">
       <a class="tb-btn" href="#/learn">My course</a>
       <a class="tb-btn" href="#/qa">Questions</a>
-      <button class="tb-btn solid" onclick="netlifyIdentity.logout()">Sign out</button>
+      <button class="tb-btn solid" id="tb-signout" onclick="netlifyIdentity.logout()">Sign out</button>
     </span>
   </div>
 

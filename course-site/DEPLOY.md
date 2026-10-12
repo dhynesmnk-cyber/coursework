@@ -4,6 +4,17 @@ Everything runs on Netlify's own building blocks: static hosting, **Identity** (
 
 ---
 
+## 0. Preview mode (accounts and payments switched off)
+
+One flag controls it: `demoMode` at the top of `assets/js/config.js`.
+
+- `demoMode: true` (current): open preview. No sign-in, no Stripe. Every visitor walks straight in from the homepage ("Start the course"), progress and profile save to the browser's local storage only, question sending is disabled with an on-screen explanation, and a "Preview mode" chip shows in the top bar so nobody mistakes it for the live product.
+- `demoMode: false`: live mode. Netlify Identity sign-in, Stripe checkout and access codes, server-side progress, working Q&A inbox.
+
+Flip the flag and redeploy; nothing else changes. Use preview mode for showing the course to prospects, and live mode once your Stripe links and environment variables are configured.
+
+---
+
 ## 1. Brand the course (2 minutes)
 
 Edit `assets/js/config.js`:

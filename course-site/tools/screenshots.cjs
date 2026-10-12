@@ -52,6 +52,10 @@ function initScript(data) {
       logout: () => {},
     };
     const DATA = ${JSON.stringify(data)};
+    try {
+      localStorage.setItem("awspp-progress-demo", JSON.stringify(DATA.progress));
+      localStorage.setItem("awspp-demo-access", JSON.stringify(DATA.access));
+    } catch (e) {}
     window.fetch = async (url, opts) => {
       const u = String(url);
       const body = (o) => ({ ok: true, status: 200, text: async () => JSON.stringify(o) });
@@ -80,11 +84,9 @@ async function newPage(browser, { authed = false, progress = progressPart } = {}
 }
 
 async function signIn(page) {
-  await page.evaluate(() => {
-    window.__h.init({ id: "u1", email: "sam@example.com" });
-  });
-  await page.waitForSelector(".sidebar", { timeout: 5000 });
-  await page.waitForTimeout(500);
+  // Preview mode boots straight into a synthetic signed-in session.
+  await page.waitForSelector(".sidebar, .hero", { timeout: 5000 });
+  await page.waitForTimeout(400);
 }
 
 async function shot(page, name, opts = {}) {
@@ -179,7 +181,7 @@ async function shot(page, name, opts = {}) {
     const { page, ctx } = await newPage(browser, { authed: true });
     await signIn(page);
     await page.evaluate(() => { location.hash = "#/qa"; });
-    await page.waitForSelector(".qa-reply", { timeout: 5000 });
+    await page.waitForSelector(".demo-note", { timeout: 5000 });
     await page.waitForTimeout(300);
     await shot(page, "09-qa-inbox");
     await ctx.close();

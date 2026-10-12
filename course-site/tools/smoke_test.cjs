@@ -15,7 +15,7 @@ function check(name, cond) {
   else { failures++; console.log("  FAIL " + name); }
 }
 
-function makeDom() {
+function makeDom(opts = {}) {
   const dom = new JSDOM(read("index.html"), {
     url: "http://localhost/",
     runScripts: "dangerously",
@@ -28,6 +28,7 @@ function makeDom() {
   for (const f of ["assets/js/config.js", "assets/js/content.js", "assets/js/quizzes.js", "assets/js/md.js"]) {
     w.eval(read(f));
   }
+  if (!opts.demo) w.eval("window.COURSE_CONFIG.demoMode = false;");
   return { dom, w };
 }
 
@@ -137,6 +138,27 @@ const tick = () => new Promise((r) => setTimeout(r, 60));
     await tick();
     check("profile prefilled", app().includes('value="Test Plumbing Pty Ltd"'));
 
+    w.close();
+  }
+
+  // ── 3. Preview (demo) mode, no Identity, no Stripe ────────────────────
+  console.log("Preview mode:");
+  {
+    const { w } = makeDom({ demo: true });
+    bootApp(w);
+    await tick(); await tick();
+    const app = () => w.document.querySelector("#app").innerHTML;
+    check("hero offers Start the course", app().includes("Start the course"));
+    check("no Stripe buy button in hero", !app().includes(">Buy access<"));
+    check("preview note shown", app().includes("open preview"));
+    w.location.hash = "#/learn";
+    await tick();
+    check("dashboard reachable with no account", app().includes("Welcome back"));
+    check("preview tier shown", app().includes("preview"));
+    w.location.hash = "#/qa";
+    await tick();
+    check("qa sending disabled with explanation", app().includes("Preview mode: question sending is switched off"));
+    check("send button disabled", app().includes("disabled"));
     w.close();
   }
 
