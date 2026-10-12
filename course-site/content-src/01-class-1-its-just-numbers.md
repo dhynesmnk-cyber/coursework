@@ -1,82 +1,83 @@
 # Class 1: It's Just Numbers, Honest
 ### What AI actually is, what it isn't, and why the difference matters to you
 
----
+**Time:** about 20 minutes of reading, plus a 15-minute exercise.
+**By the end of this class you can:** explain in two plain sentences what an AI model is, tell a model apart from a product like ChatGPT, list three tasks these tools are reliably good at today and three they are not, and name the economic change that matters most to a small business.
 
-## Registration page description (150 words)
+## Start with something you have already used
 
-Before you decide whether AI belongs in your business, you need to know what it is. Not the science-fiction version, not the marketing version. The real one. In this opening class we take the mystery out of the machine. You will learn that an AI model is a stack of billions of numbers that performs extremely fast pattern-matching, and that when people say a model "thinks" or "understands," they are reaching for a metaphor. You will learn the difference between the model (the engine) and products like ChatGPT, Claude, Gemini and Copilot (the cars built around it), and why that distinction means you can compare, swap and negotiate these tools like any other software purchase. We will finish with the quiet, unglamorous story that matters most: the cost of making and running custom software has collapsed, and that changes what a ten-person business can afford. Bring a laptop if you have one. No experience needed.
+Your phone keyboard guesses your next word as you type. It is rarely magical and often right, because it has seen enough of your sentences to know their shape. A large language model (the "LL" in LLM, a model trained on vast amounts of text) is that same idea at enormous scale. Instead of learning from your last three words, it learns patterns from more written material than any human could read in a lifetime. Hold that picture. Nearly everything in this course follows from it.
 
----
+## What a model actually is
 
-## Detailed outline
+A model is a stack of numbers: billions of them, arranged in a specific structure, and that is it. A useful way to picture that stack is a mixing desk with billions of faders. During training, a computer programme nudges those faders a hair at a time, checks how good the guess was, and nudges again, millions of times, until the guesses line up with the examples it was shown. Then the faders are locked. The finished model is simply that desk: a file of billions of numbers in a fixed arrangement.
 
-**1. The room-temperature introduction.**
-Start with a show of hands: who has used ChatGPT, Claude, Gemini or Copilot in the last month? Who has been told by a supplier, a bank, or a conference speaker that they must "adopt AI" immediately? Both numbers are usually high. The class promise: by the end of the series you will be able to tell the difference between a genuine capability and a sales pitch, and you will have paperwork to prove it to your staff.
+When you use the model, your text runs across those numbers at speed and out comes the most plausible continuation. There is no mind in the file and no ghost in the machine. When someone says the model "thinks" or "understands", they are reaching for a metaphor, and metaphors are fine in conversation as long as you know that is all they are.
 
-**2. What a model actually is: a stack of numbers.**
-A large language model (the "LL" in LLM stands for large language) is a file, or more usually a set of files, containing billions of numbers arranged in a fixed structure. Those numbers were produced by a training process that read an enormous amount of text and adjusted the numbers until the structure got good at one task: guessing what comes next. That is the whole mechanism. There is no ghost in the machine, no mind, no understanding in the human sense. When the model produces an answer, it is performing very fast, very large pattern-matching across those numbers and emitting the most plausible continuation of your prompt.
+## Why confident nonsense happens
 
-**3. Why "plausible" is not the same as "true".**
-Because the model is optimised for plausible-sounding continuation, it can produce a confident sentence that is factually wrong. The industry calls these hallucinations; a plainer word is "confident nonsense." This single fact explains most AI horror stories you have heard, and we will return to it in Classes 4 and 6.
+The model is tuned to produce plausible text, and plausible is not the same as true. Where its reading contains plenty of examples of what an answer looks like but nothing reliable about your exact question, it produces the shape of an answer: a confident sentence, a realistic-looking reference, a number in the right range. The industry calls this a hallucination (output that is confident, plausible and wrong). Plain English is better: the model made it up. This one fact explains most AI horror stories, and it is why every later class in this course ends with a human checking names, numbers, dates and quotes.
 
-**4. Tokens: the unit the machine actually works in.**
-Models do not read words; they read tokens (chunks of text, roughly three-quarters of an English word each). Everything about cost, speed and the "context window" (how much text the model can hold in front of it at once, measured in tokens) is built on this. You do not need to count tokens, but you need to know the concept exists, because in Class 4 it explains why being specific beats being verbose.
+## Tokens, in one paragraph
 
-**5. The engine and the car.**
-The model is the engine. ChatGPT, Claude, Gemini and Copilot are cars: software products wrapped around engines. The car has a user interface, a billing system, a terms-of-service agreement, memory features, file upload, integrations with your email and documents, and a company behind it trying to make money. Two products can use different engines, and one company can swap the engine under the car without telling you much. This framing gives you consumer power: cars can be test-driven, compared, cancelled and negotiated. Engines are an implementation detail.
+Models read in mouthfuls of text called tokens (chunks of roughly three-quarters of an English word). You will never need to count them. You need the concept because prices, speed and memory limits are all measured in tokens, and because Class 4 uses it to explain why a long conversation gets worse near the end.
 
-**6. The same words mean different things on different cars.**
-"Memory," "projects," "custom instructions," "connectors" and "agents" all mean slightly different things at OpenAI, Anthropic, Google and Microsoft. In this series we will teach you to read past the branding and ask three questions of any feature: What data does it touch? Where does that data go? What happens when I switch it off?
+## The engine and the car
 
-**7. A very short history, because it explains the cost story.**
-In 1995, building software meant hiring developers, buying licences, renting or purchasing servers, and shipping physical media. Every extra copy and every extra user cost real money, so software was built once, sold to thousands, and customised for almost nobody below the size of a bank. Copying and running software is now effectively free at the margin: the 1s and 0s cost nothing to duplicate, and cloud servers rent by the hour. On top of that, AI-assisted tools now write large amounts of the routine code for you. The practical consequence: software that used to require a $200,000 build and a dedicated IT team can now be assembled, tailored to one specific business, and deployed in days, sometimes hours. That collapse in the cost of customised software is the actual story of this decade, and it is Class 5 in full.
+The model is the engine. ChatGPT, Claude, Gemini and Copilot are cars: software products built around an engine, complete with a user interface, a billing system, a terms-of-service agreement and a company trying to make money. Two cars can share an engine, and one company can swap the engine under its car without much ceremony. The practical payoff for you is consumer power. Cars can be test-driven, compared, cancelled and negotiated. Keep the engine in mind as an implementation detail and judge the car on what it does with your work.
 
-**8. What these tools are genuinely good at today.**
-Drafting and rewriting text, summarising long documents, translating jargon into plain language, first-draft spreadsheets formulas, brainstorming, drafting code, pulling structure out of messy notes. Notice the pattern: every one of those is a task where a rough first draft saves you time and a human checks the result. That is the sweet spot.
+## What these tools are good at today
 
-**9. What these tools are genuinely bad at today.**
-Reliable facts without verification, arithmetic across many steps, knowing anything about your business that you have not told them, knowing anything recent unless the product has a live search feature, and admitting uncertainty. They have no memory of your Tuesday unless the product stores something for them, and even then it is stored text being replayed, not learning.
+- Drafting and rewriting text of almost any kind, from emails to policy documents.
+- Summarising long material and pulling structure out of messy notes.
+- Translating jargon into plain language, in both directions.
+- First drafts of spreadsheets formulas, checklists and code.
+- Brainstorming options when you need fifteen ideas and have three.
 
-**10. Cloud, local, and a preview of the trade-off.**
-Most products run in the cloud: your text goes to the vendor's servers, the engine runs there, the answer comes back. Some models (Meta's Llama family, Mistral, Qwen and others) have their weights published so you can run them on your own hardware, which is called running a model locally. Cloud gives convenience and scale; local gives control and privacy plus a maintenance burden. Class 3 covers this properly. Tonight you only need the shape of the trade-off.
+Notice the pattern: every one of these is a task where a rough first draft saves time and a human checks the result. That is the sweet spot, and it is a large one.
 
-**11. The vocabulary you now own.**
-Quick recap of the six words that carry the rest of the series: model, token, context window, hallucination, prompt (what you type in), and system prompt (the standing instructions the product or you give the model before your prompt). All six are in the glossary below and in every handout from here on.
+## What they are bad at today
 
-**12. Setting expectations for the series.**
-Nobody leaves this course an AI believer or an AI sceptic. You leave able to describe, in two sentences, what a tool does with your data and what it produces on your screen today. That is enough to make every purchasing, policy and productivity decision on the list.
+- Reliable facts, unless you supply them or the product fetches them with a live search you can inspect.
+- Arithmetic across many steps. Ask for a formula or a small program instead, then check it.
+- Knowing anything about your business that you have not told them in this conversation or stored setting.
+- Admitting uncertainty. These tools do not say "I don't know" unless they were tuned to.
 
----
+## The quiet story that matters most
 
-## Myth to bust: "AI understands language."
+In 1995, custom software meant developers, servers, licences and physical media, so it was built once and sold to thousands, and a ten-person business bent its processes around whatever was shrink-wrapped. Copying and running software is now effectively free at the margin (the cost of one extra copy or one extra user is close to zero), and AI tools now write much of the routine code. Software tailored to your one specific business, which used to be a six-figure conversation, can now be an afternoon. Class 5 is entirely about this, because it is the change that will actually show up in your budget.
 
-It does not, and the distinction is practical rather than philosophical. A model is a stack of numbers that has learned, statistically, which words tend to follow which other words across an unimaginable volume of text. It produces language that reads as if understanding sits behind it, because the patterns it absorbed were written by people who did understand. When a model explains your tax obligations, it is not consulting a concept of taxation; it is reproducing the shape of text that tax explanations take. That is why it can be brilliant on the common case and badly wrong on the unusual one, why it never says "I don't know" unless it was tuned to, and why a human who knows the subject must check anything the model produces before it reaches a customer, a client or the ATO. Treating output as fluent pattern-matching rather than understanding is the single habit that prevents most AI-related business disasters.
+## Cloud or local, the thirty-second version
 
----
+Most products run in the cloud (on the vendor's servers, with your text travelling to them over the internet). Some models publish their numbers so you can run them on your own machine, which is called running locally. Cloud buys convenience and scale. Local buys control and privacy, plus a maintenance job. Class 3 turns this into a decision you can make about your own data.
 
-## Practical exercise: "Two prompts, one model, different cars"
+## Myth, meet reality
 
-**Time: 20 minutes. Needs: a phone or laptop; free accounts on two of ChatGPT, Claude, Gemini or Copilot (or two browser tabs using logged-out free tiers).**
+**"AI understands language."** It produces language that reads as if understanding sits behind it, because the patterns it absorbed were written by people who did understand. When it explains a tax rule it is not consulting a concept of tax. It is reproducing the shape of text that tax explanations take, which is why it is brilliant on the common case and badly wrong on the unusual one. Treat every output as fluent pattern-matching, not as understanding, and you have the single habit that prevents most AI-related business disasters.
 
-1. Everyone writes one real work task as a prompt. Examples supplied: "Draft a polite reminder email to a customer who is 30 days overdue on an invoice of $2,300," or "Summarise this 400-word council notice in three bullet points a tradie will actually read."
-2. Paste the identical prompt into two different products.
-3. Compare: length, tone, confidence, whether either invented a detail (a fake interest rate, a fake deadline), and which one you would send with less editing.
-4. Now add one specific constraint to the prompt ("maximum 80 words, no apologies, mention that work continues on schedule") and run it again on both. Note how much the answer changes.
-5. Group debrief. The point to land: the engine differs less than the car, but the car's defaults (tone, length, caution) are noticeable, and specificity in your prompt is worth more than the choice of product.
+## Your exercise: two products, one task
 
----
+1. Write one real work task as a request. For example: draft a polite reminder email to a customer who is 30 days overdue on an invoice of $2,300.
+2. Paste the identical request into two different products, using free accounts if that is all you have. Nothing sensitive goes in.
+3. Compare the two answers for length, tone, confidence, and any invented detail such as a fake interest rate or deadline. Note which one you would send with less editing.
+4. Add one hard constraint, such as "maximum 80 words, no apologies, mention that work continues on schedule", and run both again. Note how much the answers improve.
+5. Write one sentence answering this: was the difference between the products bigger, or the difference made by your constraint? Most people find the constraint wins, and that finding is Class 4 in miniature.
 
-## Glossary
+## Before you move on
 
-- **Model:** the trained stack of numbers that does the pattern-matching. The engine. Examples: GPT-series models (OpenAI), Claude models (Anthropic), Gemini models (Google), Llama (Meta).
-- **Product / app:** the software around a model that you actually use: ChatGPT, Claude, Gemini app, Copilot. The car.
-- **Token:** the unit of text a model processes, roughly three-quarters of an English word. Pricing and memory limits are measured in tokens.
+- I can explain what a model is without saying "it thinks".
+- I can name the product I use most and say which company's engine likely sits under it.
+- I can list one task I will try this week and one task I will keep fully human for now.
+
+## Words used in this class
+
+- **Model:** the trained file of numbers that does the pattern-matching. The engine.
+- **Product or app:** the software around a model that you actually use, such as ChatGPT or Copilot. The car.
+- **Token:** a mouthful of text, roughly three-quarters of an English word. The unit prices and limits are measured in.
 - **Prompt:** the text you type to the model.
-- **System prompt:** standing instructions placed before your prompt that shape the model's behaviour (tone, role, rules). Some products let you write your own; all products have the vendor's own baked in.
-- **Context window:** the maximum amount of text (measured in tokens) a model can consider at once, including your prompt, your uploaded document and its reply. Think of it as the size of the desk the model works on.
-- **Hallucination:** confident, plausible, wrong output. Plain English: the model made it up.
-- **Training:** the expensive, one-off process of adjusting the model's numbers using large datasets. It happens at the vendor, before you ever use the product. It is not happening when you chat.
-- **Weights:** another word for the model's numbers. "Open weights" means the numbers are published so others can run the model on their own hardware.
-- **Local model:** a model running on your own computer or office server instead of a vendor's cloud.
-- **Cloud:** someone else's computers, reached over the internet, rented by the hour or by the user.
+- **System prompt:** standing instructions placed before your prompt that shape tone, format and rules. Class 4 and Document 1 cover writing your own.
+- **Context window:** the maximum text a model can consider at once, like the size of its desk.
+- **Hallucination:** confident, plausible, wrong output. The model made it up.
+- **Training:** the one-off, expensive process of setting the model's numbers using large datasets. It happens at the vendor, long before you type anything.
+- **Weights:** another word for the model's numbers. "Open weights" means published, so anyone can run the model on their own hardware.
+- **Local model:** a model running on your computer or office server instead of a vendor's cloud.

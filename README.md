@@ -6,7 +6,7 @@ Content and software for **AI Without the Sales Pitch**, a plain-language AI edu
 
 | Directory | Contents |
 |---|---|
-| `ai-without-the-sales-pitch/` | The written content package: series overview, six full class scripts (description, outline, myth to bust, exercise, glossary), the ten ready-to-use SMB documents, facilitator notes, and research notes with sources. |
+| `ai-without-the-sales-pitch/` | The written content package: series overview, six learner-facing class chapters (outcomes, plain-language teaching, myth section, solo exercise, word list), the ten ready-to-use SMB documents, facilitator notes, registration blurbs, and research notes with sources. |
 | `course-site/` | The sellable self-paced web course: static HTML + vanilla JS single-page app for Netlify (Identity for accounts, Functions + Blobs for codes/progress/Q&A, Forms for question emails), Stripe checkout with access codes, quizzes, worksheets, personalised document downloads, printable certificate, and a token-protected admin Q&A inbox. |
 | `course-site/previews/` | Ten screenshots of the course UI, rendered from the real code by `course-site/tools/screenshots.cjs`. |
 

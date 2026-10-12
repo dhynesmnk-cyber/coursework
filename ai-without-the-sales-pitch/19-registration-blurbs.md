@@ -1,0 +1,30 @@
+# Registration Page Blurbs
+
+The six 150-word class descriptions for marketing and registration pages,
+kept here so the class files themselves stay purely learner-facing.
+Written for the facilitated community programme; the self-paced course uses
+the learner-facing chapter openings instead.
+
+## Class 1: It's Just Numbers, Honest
+
+Before you decide whether AI belongs in your business, you need to know what it is. Not the science-fiction version, not the marketing version. The real one. In this opening class we take the mystery out of the machine. You will learn that an AI model is a stack of billions of numbers that performs extremely fast pattern-matching, and that when people say a model "thinks" or "understands," they are reaching for a metaphor. You will learn the difference between the model (the engine) and products like ChatGPT, Claude, Gemini and Copilot (the cars built around it), and why that distinction means you can compare, swap and negotiate these tools like any other software purchase. We will finish with the quiet, unglamorous story that matters most: the cost of making and running custom software has collapsed, and that changes what a ten-person business can afford. Bring a laptop if you have one. No experience needed.
+
+## Class 2: Selling the Sizzle
+
+A large share of what the public hears about AI is vendor marketing wearing an education costume. This class hands you the tools to see the seams. We work through real, recent, named examples: the big consulting firm that had to refund the Australian government after an AI-drafted report contained invented citations; the fintech that announced AI had replaced 700 customer-service agents and then quietly started rehiring humans; the airlines, fast-food chains and language apps that learned the same lesson the expensive way. From those cases we build a simple field test you can apply to any claim, any demo, any sales call: does this describe what the software does today, on my screen, with my data, or does it ask me to imagine a future that has not arrived? You will leave able to run a vendor meeting like a buyer rather than a believer, with a list of questions that separate capability from brochure.
+
+## Class 3: Your Data, Their Servers
+
+When you type a customer's details into a chatbot, where do they go, who can see them, and can they come back to bite you? This class answers all three in plain English. We explain the difference between cloud AI (your data travels to a vendor's servers; you get convenience and scale) and local AI (the model runs on your own hardware; you get control and privacy, plus a maintenance burden), and we show what a sensible hybrid looks like for a small business: cloud tools for low-sensitivity tasks, local or contracted tools for customer data, financials and anything under a non-disclosure agreement. You will learn what "training on your data" actually means, how to opt out on ChatGPT, Claude, Gemini and Copilot step by step, and the practical Australian Privacy Act obligations that apply when your staff paste personal information into a US-hosted tool. Bring your phone: we will do the opt-out settings live, together, in class.
+
+## Class 4: Talking to the Software
+
+There is an entire cottage industry selling "prompt engineering" secrets. Most of it is superstition. The real mechanics are three, and you can learn them in one evening. First, the context window: the model only knows what is currently on its desk, so what you include in the conversation matters more than how you phrase the request. Second, the system prompt: standing instructions that shape every answer, which most major products let you write yourself so the tool permanently knows your business, your tone and your rules. Third, specificity: one clear constraint is worth ten polite adjectives. We will write real prompts for real tasks (emails, meeting notes, quotes, policy documents), build a system prompt for your own business live in class, and cover what to do when the output is wrong, vague or confidently invented. You will leave with a prompting cheat sheet and a working system prompt you can paste into ChatGPT, Claude, Gemini or Copilot tonight.
+
+## Class 5: Software Without the Software Bill
+
+Here is the story the AI hype cycle keeps skipping. In 1995, custom software cost a fortune: developers, servers, licences, physical media, and an IT team to keep it alive. Copying and running software is now effectively free, and AI tools write much of the routine code. The result is that software tailored to your one specific business, the quoting spreadsheet that became a proper tool, the booking system nobody sells in your niche, the internal dashboard your ops manager keeps sketching on napkins, can now be built in days, sometimes hours, for hundreds of dollars instead of hundreds of thousands. This class shows what that looks like in practice, demos a small real build live, and draws the honest boundaries: what a non-technical owner can safely do, where you still need a professional, and the security and maintenance traps that catch people who build without asking. Cloud and local tooling compared, real costs, real limits, no sizzle.
+
+## Class 6: Keeping Your House in Order
+
+Your staff are already using AI. The only open question is whether you know where, with what data, and what happens when something goes wrong. This final class turns everything from the series into a one-week rollout for your business. We cover shadow AI (staff using AI tools the business does not know about), why banning it fails and surfacing it works, the four data-security habits that prevent almost every AI incident, and the Australian obligations that attach once personal information meets a chatbot. Then we build the paperwork together: a plain-English AI use policy, an incident response card for the four scenarios that actually happen, and a short vendor checklist for any AI purchase. You leave with the full ten-document pack, a rollout plan sized for your team, and the confidence to answer the two questions every owner eventually faces: "Did you use AI on my file?" and "Where is our client data?"

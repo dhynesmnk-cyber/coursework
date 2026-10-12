@@ -1,80 +1,92 @@
 # Class 6: Keeping Your House in Order
 ### Shadow AI, data security basics, and the paperwork that protects a small business
 
----
+**Time:** about 20 minutes of reading, plus a 30-minute rollout draft.
+**By the end of this class you can:** explain shadow AI without villainising anyone, run a one-week governance rollout for a business up to about fifty people, answer "did you use AI on my file?" honestly and calmly, and name the single role that makes all of it stick.
 
-## Registration page description (150 words)
+## Start with the uncomfortable truth
 
-Your staff are already using AI. The only open question is whether you know where, with what data, and what happens when something goes wrong. This final class turns everything from the series into a one-week rollout for your business. We cover shadow AI (staff using AI tools the business does not know about), why banning it fails and surfacing it works, the four data-security habits that prevent almost every AI incident, and the Australian obligations that attach once personal information meets a chatbot. Then we build the paperwork together: a plain-English AI use policy, an incident response card for the four scenarios that actually happen, and a short vendor checklist for any AI purchase. You leave with the full ten-document pack, a rollout plan sized for your team, and the confidence to answer the two questions every owner eventually faces: "Did you use AI on my file?" and "Where is our client data?"
+Your staff are already using AI. Every workplace survey since 2023 has found the same shape: usage runs well ahead of policy, everywhere, including in businesses that believe they have banned it. The only open question is whether you know where the usage happens, with what data, and what occurs when something goes wrong. This class closes that gap in one week, without blame, because blame is what keeps the next mistake hidden.
 
----
+## Shadow AI, defined plainly
 
-## Detailed outline
+Shadow AI is staff using AI tools for work without the business knowing or approving: pasting the client list into a free chatbot to tidy it up, drafting the tender response on a personal account at the kitchen table, summarising a roster that contains everyone's home addresses in a phone app. It is called shadow because the usage is invisible to the business, not because the staff are villains. Usually they are being enterprising with the tools they have, which is a trait you otherwise want.
 
-**1. Start with the uncomfortable statistic-free truth.**
-Every survey of knowledge workers since 2023 has found a large share using AI at work, and a smaller share saying their employer has a policy about it. You do not need the exact percentages; you need the shape: usage runs ahead of governance everywhere, including in your business, including among the people in this room who are the employer. The goal tonight is to close the gap in one week, not to assign blame.
+## Why it is a genuine risk, in three lines
 
-**2. Shadow AI, defined plainly.**
-Staff using AI tools for work without the business knowing or approving: pasting the client list into a free chatbot to "tidy it up," drafting the tender response on a personal account at the kitchen table, using a phone app to summarise the staff roster that contains everyone's home addresses. It is called shadow because the usage is invisible to the business, not because the staff are villains. Usually they are being enterprising with the tools they have.
+Data risk: consumer-tier tools may retain content, may use it to improve models unless a toggle says otherwise, sit on overseas servers, and come with no contract you can point to. Accuracy risk: unverified output reaches customers, as the Deloitte and Air Canada cases in Class 2 showed at scale. Compliance risk: under the Privacy Act you remain responsible for personal information your business collects, including when an employee sends it to a US chatbot from their phone, which is the APP 8 and APP 11 point from Class 3.
 
-**3. Why shadow AI is a genuine risk, in three lines.**
-Data risk: consumer-tier tools may retain content, may use it to improve models unless toggled off, sit on overseas servers, and come with no contract you can point to. Accuracy risk: unverified output reaches customers, as the Deloitte and Air Canada cases in Class 2 showed at scale. Compliance risk: under the Privacy Act you remain responsible for personal information your business collects, including when an employee sends it to a US chatbot from their phone (Class 3, APP 8 and APP 11).
+## Why bans fail, and what works instead
 
-**4. Why bans fail and what works instead.**
-Banning AI usage in 2026 is like banning the photocopier in 1986: unenforceable, invisible, and it guarantees the usage that does happen is hidden. What works is the amnesty-plus-tools pattern: approve two or three tools on business tiers, publish a one-page policy saying what may and may not be pasted where, add a no-blame reporting line for "oops" moments, and ask teams what they are already using so you can formalise the useful parts. Document 3 is exactly this policy, written to be handed out, not filed.
+Banning AI usage in 2026 is like banning the photocopier in 1986: unenforceable, invisible, and it guarantees the usage that does happen is hidden, which is exactly the risk you are trying to reduce. What works is the amnesty-plus-tools pattern. Approve two or three tools on business tiers. Publish a one-page policy saying what may and may not be pasted where. Add a no-blame reporting line for oops moments. Then ask teams what they are already using, with no consequences for honesty, so the useful habits get formalised and the risky ones get moved to the right tool. Document 3 is exactly this policy, written to be handed out rather than filed.
 
-**5. The four habits that prevent almost every incident.**
-One: tier discipline, work data only on business-tier or local tools with contractual protections. Two: the decision drill from Class 3 before pasting (personal information? secrets? NDA?). Three: human check on everything that leaves the building (names, numbers, dates, quotes, citations). Four: tell someone when it goes wrong, same day, no drama. Every document in your pack operationalises one of these habits.
+## The four habits that prevent almost every incident
 
-**6. The one-page policy, live.**
-Walk through Document 3 section by section: what it allows, what it forbids, the "if you already pasted something sensitive" procedure, and the contact point. Attendees mark up their copy with their own business specifics (tool names, the responsible person, the reporting email). The policy is deliberately firm but not punitive; its goal is to bring usage into the open.
+1. **Tier discipline.** Work data only on work accounts, on business tiers or local tools with contractual protections. Check which account you are signed into before pasting, every time, because the icons look alike.
+2. **The decision drill.** Personal information, secrets, or anything under NDA? If yes, change tool or redact. From Class 3, repeated here because it does most of the work.
+3. **Human check on everything that leaves the building.** Names, numbers, dates, quotes, citations. The check is usually faster than doing the task from scratch, which is why the honest productivity claim is "faster with review".
+4. **Same-day reporting.** Anything sensitive that went where it should not: tell the policy owner the same day, no drama. Fast reporting turns incidents into log entries. Delay is the only thing that turns them into crises.
 
-**7. The incident card, live.**
-Document 10 covers the four scenarios that actually occur: an employee realises they pasted sensitive data into a consumer tool; a client asks whether AI was used on their deliverable; a vendor breach hits the news; wrong AI output went to a customer. For each, a short calm checklist. Rehearse one in class: pick the "client asks if you used AI" scenario and have two attendees role-play the answer. The honest answer, prepared in advance, is: yes where it was used, here is what a human checked, here is our policy.
+## The one-page policy, walked through
 
-**8. Vendor governance for the rest of us.**
-Small businesses will not run enterprise procurement, but three habits carry most of the value: keep a one-line register of every AI tool in use (who uses it, what tier, what data touches it); before any purchase, run the Class 2 vendor questions and get the business-tier terms and DPA in writing; review the register quarterly alongside Document 6's refresh, because pricing, tiers and policies all move.
+Open Document 3 and read it once properly. It covers where the business stands (we want you using these tools well, not secretly), the approved tool list, what may be pasted, what must never be pasted, the checking rule, the same-day oops procedure, and honest disclosure to clients. Your job this week is to make it yours: replace the bracketed business name and contact person, cross out anything that does not apply, and add one industry-specific prohibition. A medical centre adds "no patient identifiers, ever". A law firm adds "nothing covered by client privilege without the principal's approval". One page, one read, one signature line. Anything longer does not get read, which is why it is one page.
 
-**9. Disclosure: when to tell people AI was involved.**
-There is no blanket Australian legal requirement to label ordinary business documents as AI-assisted (unlike some academic journals and some advertising rules), and specific regimes are tightening: from 10 December 2026, privacy policies must describe significant automated decisions about people; some contracts already restrict AI use (as Deloitte discovered); and misleading conduct rules mean you must never imply a human did work an AI did unsupervised, or claim AI verification you did not perform. The practical policy: disclose on request, honestly and without theatre; disclose proactively where the work is advice, legal, medical, financial, or safety-related; and never let AI output impersonate a specific human's verified judgement.
+## The incident card, walked through
 
-**10. Accountability without a compliance department.**
-Assign one named person (in a ten-person business, that is often the owner or office manager) to own: the policy, the tool register, the quarterly review, and the incident log. Give them the pack. Ownership is the difference between paperwork and practice; every failed rollout in every industry comes down to nobody owning the thing.
+Document 10 covers the four scenarios that actually occur, each as a short calm checklist: an employee realises they pasted sensitive data into a consumer tool; a client asks whether AI was used on their deliverable; a vendor breach hits the news; wrong AI output went to a customer. Read all four once before you need them, then pin the card where people can see it. Rehearse one out loud, really, out loud, because the scenario worth practising is the client question. The honest answer, prepared in advance, is: yes where it was used, here is what a human checked, here is our policy. Delivered calmly, that answer builds trust. Improvised under pressure, the same facts sound like a confession.
 
-**11. The 2026 regulatory horizon, briefly.**
-Australian reform is staged: the first tranche of Privacy Act amendments is in force (stronger OAIC powers, higher penalties, the children's online privacy code process, the statutory tort since June 2025, the automated decision-making transparency duty arriving 10 December 2026). Further tranches, including the fate of the small-business exemption, remain in the policy pipeline; the sensible posture is to run your business as if the exemption will not save you, because it is shrinking and because good practice is cheap. The OAIC's generative AI guidance is the plainest official statement of expectations and is two pages of practical sense: minimise, secure, be transparent, keep humans accountable.
+## Vendor governance for the rest of us
 
-**12. The one-week rollout plan.**
-Day one: pick your named owner and your two or three approved tools. Day two: circulate Document 3 (the policy) with a covering note that says "we want you using these well, not secretly." Day three: collect the amnesty answers, what are you already using, no consequences. Day four: move approved tools to business tiers or set up the local option; apply the opt-out settings from Document 5 for anything staying on consumer tiers. Day five: pin Document 10 (the incident card) where people can see it and run a ten-minute toolbox talk using Document 8 (the FAQ). That is a complete governance rollout for a business of up to about fifty people, done in a week, at the cost of a subscription or two.
+You will not run enterprise procurement, and you do not need to. Three habits carry most of the value. Keep a one-line register of every AI tool in use: name, tier, who uses it, what data touches it. Before any purchase, run the Class 2 vendor questions and get the business-tier terms and data processing agreement in writing. Review the register quarterly, in the same calendar slot as the pricing and privacy-settings review from Documents 5 and 6, because tiers, prices and policies all move.
 
----
+## Disclosure: when to say AI was involved
 
-## Myth to bust: "We're too small to be a target, so AI data risks don't apply to us."
+There is no blanket Australian legal requirement to label ordinary business documents as AI-assisted. Specific duties are tightening anyway, so work from principles. Disclose on request, honestly and without theatre. Disclose proactively where the work is advice: legal, accounting, medical, engineering, or anything safety-related. Follow any contract that restricts AI use, because breaching one is a commercial and legal problem regardless of AI law, as Deloitte discovered. And never imply a human verified work that nobody checked, because misleading conduct rules apply and, more importantly, being caught ends relationships that honest disclosure would have strengthened.
 
-Attackers and data brokers do not sort victims by headcount; they sort by weakness, and a small business with staff pasting client data into free consumer chatbots, no written policy, no tool register and no incident plan is weak in exactly the measurable ways. The Australian Notifiable Data Breaches scheme consistently shows that human error and compromised credentials, the everyday stuff, account for the bulk of incidents, well ahead of Hollywood-grade hacking, and a chatbot account on a personal email with a reused password is squarely in that category. "Too small" also fails as a legal defence: the Privacy Act's core obligations attach to many small organisations regardless of turnover (health providers, anyone trading in personal information, Commonwealth contractors), the statutory tort for serious invasions of privacy since June 2025 applies to individuals and organisations without a turnover test, and the new automated-decision-making transparency duty from December 2026 has no small-business carve-out in the way people assume. Finally, your clients increasingly flow obligations down: the tender question "describe your AI governance" now reaches businesses of every size, and "we're too small for that" is a losing answer against a competitor holding this course's one-page policy. The correct conclusion is not fear; it is that the controls a small business needs are proportionately small, one page, one owner, one week, and this class hands you all three.
+## Accountability without a compliance department
 
----
+Assign one named person to own the policy, the tool register, the quarterly review and the incident log. In a ten-person business that is often the owner or the office manager. Give them the document pack and half an hour a month. Ownership is the difference between paperwork and practice. Every failed rollout in every industry comes down to nobody owning the thing, and every successful one to somebody doing exactly this.
 
-## Practical exercise: "The one-week rollout, drafted tonight"
+## The regulatory horizon, briefly
 
-**Time: 30 minutes. Needs: the ten-document pack (paper or on screen), pen.**
+Australian reform is staged, and the direction of travel is clear even where the dates are not. The first tranche of Privacy Act amendments is in force, with stronger regulator powers, higher penalties and a statutory tort for serious invasions of privacy since June 2025. The automated decision-making transparency duty arrives on 10 December 2026. Further tranches, including the fate of the small-business exemption, remain in the policy pipeline. The sensible posture is to run your business as if the exemption will not save you, because it is shrinking and because good practice here is cheap: one page, one owner, one week.
 
-1. Each business owner or manager (staff pairs up and does it for their employer as a proposal) fills in the rollout worksheet: the named owner; the two or three tools to approve and their tiers; the one line for the tool register; the reporting email or phone for oops moments; and the date of next week's toolbox talk.
-2. They mark up Document 3 with their specifics: replace "[Business name]" and "[Contact person]", cross out anything that does not apply, and add their one industry-specific prohibition (a medical centre adds "no patient identifiers, ever"; a law firm adds "nothing covered by client privilege without the principal's approval").
-3. They choose one incident scenario from Document 10 and read its checklist aloud to a partner, who then asks one "but what if" question. Partners swap and repeat with a different scenario.
-4. Close the loop: each attendee writes one sentence at the bottom of the worksheet, the first thing they will say to their team on Monday. Several volunteers read theirs. The series ends where governance starts: one named person, one page, one conversation.
+## The one-week rollout plan
 
----
+- **Day one:** pick your named owner and your two or three approved tools.
+- **Day two:** circulate Document 3 with a covering note that says, in your words, "we want you using these well, not secretly".
+- **Day three:** collect the amnesty answers. What is already in use, no consequences. Formalise the useful parts.
+- **Day four:** move approved tools to business tiers, or set up the local option. Apply the opt-out settings from Document 5 to anything staying on consumer tiers in the meantime.
+- **Day five:** pin Document 10 where people can see it and run a ten-minute toolbox talk (a short team briefing, usually at the start of a shift) using Document 8, the plain-English FAQ.
 
-## Glossary
+That is a complete governance rollout for a business of up to about fifty people, done in a week, at the cost of a subscription or two. There is no version of this that requires a consultant, a project board or a quarter.
+
+## Myth, meet reality
+
+**"We are too small to be a target, so AI data risks do not apply to us."** Attackers and data brokers do not sort victims by headcount. They sort by weakness, and a small business with staff pasting client data into free consumer chatbots, no written policy, no tool register and no incident plan is weak in exactly the measurable ways. Human error and compromised credentials account for the bulk of real incidents, well ahead of Hollywood-grade hacking, and a chatbot account on a personal email with a reused password sits squarely in that category. "Too small" also fails as a legal defence: the Privacy Act's core obligations already attach to many small organisations regardless of turnover, the statutory tort has no turnover test, and your clients increasingly flow obligations down through contracts, where "we are too small for that" loses to a competitor holding this course's one-page policy. The correct conclusion is not fear. It is that the controls a small business needs are proportionately small: one page, one owner, one week, all of which this class hands you.
+
+## Your exercise: draft your rollout, tonight
+
+1. Fill in the rollout worksheet in this course: named owner, approved tools and their tiers, first line of the tool register, reporting contact for oops moments, date of next week's toolbox talk.
+2. Mark up Document 3 with your specifics: business name, contact person, your one industry-specific prohibition, and cross out anything that does not apply.
+3. Choose one incident scenario from Document 10 and read its checklist out loud to someone, then let them ask one "but what if" question and answer it without looking. Swap and repeat with a second scenario.
+4. Write the first sentence you will say to your team on Monday. Say it out loud once. If it sounds like a police announcement, rewrite it until it sounds like an invitation, because the amnesty only works if people believe it.
+
+## Before you move on
+
+- I can define shadow AI without blaming anyone.
+- My named owner, approved tools and reporting line are written down.
+- I have rehearsed the client-question answer out loud at least once.
+
+## Words used in this class
 
 - **Shadow AI:** AI tools used for work without the business knowing or approving. Invisible usage, not malicious usage.
 - **AI use policy:** the one page telling staff which tools are approved, what may be pasted, what must be checked, and who to tell. Document 3.
-- **Tool register:** a one-line-per-tool list: name, tier, who uses it, what data touches it, when it was last reviewed.
+- **Tool register:** a one-line-per-tool list: name, tier, who uses it, what data touches it, when last reviewed.
 - **Amnesty:** a no-consequences window for staff to declare current AI usage so it can be formalised or corrected. The single most effective shadow-AI tool.
-- **Incident (AI context):** sensitive data pasted where it should not have been, wrong output reaching a customer, or a vendor breach affecting you. Document 10 turns each into a checklist.
+- **Incident:** sensitive data pasted where it should not have been, wrong output reaching a customer, or a vendor breach affecting you. Document 10 turns each into a checklist.
 - **Owner:** the one named person accountable for the policy, register, reviews and incident log. Without this role, everything else is decoration.
-- **Disclosure:** telling a client, customer or reader that AI was involved in producing work. Required by some contracts and some contexts; a trust-builder in most others.
-- **Flow-down obligations:** requirements your clients or funders put in contracts that become your requirements. Increasingly includes AI governance.
-- **OAIC:** the Office of the Australian Information Commissioner, the privacy regulator, whose generative AI guidance is the plainest official statement of what "reasonable steps" look like.
+- **Disclosure:** telling a client, customer or reader that AI was involved in producing work. Required by some contracts, and a trust-builder in most other situations.
+- **Flow-down obligations:** requirements your clients or funders put in contracts that become your requirements. Increasingly include AI governance.
+- **OAIC:** the Office of the Australian Information Commissioner, the privacy regulator, whose generative AI guidance is the plainest official statement of what reasonable steps look like.
 - **Toolbox talk:** a short team briefing, five to fifteen minutes, usually at the start of a shift. The right format for rolling out Documents 3, 8 and 10.

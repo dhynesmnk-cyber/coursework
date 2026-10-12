@@ -303,7 +303,7 @@
         <div class="steps" style="margin-top:36px">
           <div class="step">
             <h3>${demo ? "Open the course" : "Buy and redeem"}</h3>
-            <p>${demo ? "In this preview you walk straight in. In the live course you pay by card, get an access code and create an account." : "Pay by card through Stripe, get your access code instantly, create an account and unlock the course."}</p>
+            <p>${demo ? "In this preview you walk straight in. In the live course you pay by card, get an access code and create an account." : "Pay by card through Stripe, get your access code instantly, create an account and open the course."}</p>
           </div>
           <div class="step">
             <h3>Read a class</h3>
@@ -315,7 +315,7 @@
           </div>
           <div class="step">
             <h3>Take the documents</h3>
-            <p>Add your business name once; all ten print or download with it pre-filled. Pass the quizzes and the certificate unlocks.</p>
+            <p>Add your business name once; all ten print or download with it pre-filled. Pass the quizzes and the certificate is yours.</p>
           </div>
         </div>
       </div>
@@ -413,7 +413,7 @@
       <form id="redeem-form" class="stack-form">
         <input type="text" id="redeem-code" placeholder="XXXX-XXXX" autocomplete="off"
           style="text-transform:uppercase" required>
-        <button class="btn btn-primary" type="submit">Unlock the course</button>
+        <button class="btn btn-primary" type="submit">Open the course</button>
       </form>
       <p class="fine">No code yet? <a href="#/buy">Choose a licence</a>. Problems: email <a href="mailto:${esc(CFG.brand.supportEmail)}">${esc(CFG.brand.supportEmail)}</a> and we will sort it out the same business day.</p>
     </div>`;
@@ -491,7 +491,7 @@
       <ol>
         <li>Read a class (15 to 25 minutes). Mark it complete when done; your progress is saved to your account.</li>
         <li>Do the worksheet. It turns the class exercise into a plan for your own business, and you can print it.</li>
-        <li>Take the five-question quiz. Four out of five passes. Pass all six and your certificate unlocks.</li>
+        <li>Take the five-question quiz. Four out of five passes. Pass all six and your certificate is ready.</li>
         <li>Download documents as you need them, from the Document pack in the sidebar. Add your business name in your profile first and the templates come pre-filled.</li>
         <li>Question about your situation? Use <em>Ask a question</em> on any screen. Replies from us appear in your course inbox.</li>
       </ol>
@@ -671,7 +671,7 @@
         <p><button class="btn btn-primary" id="print-cert">Print / Save as PDF</button>
         ${!name ? ' <span class="fine">Add your name in <a href="#/profile">Profile</a> first so it appears on the certificate.</span>' : ""}</p>
       ` : `
-        <p>Pass all six class quizzes to unlock your certificate. Progress: <strong>${passed} of ${total}</strong>.</p>
+        <p>Pass all six class quizzes to earn your certificate. Progress: <strong>${passed} of ${total}</strong>.</p>
         <ul class="cert-progress">
           ${CONTENT.classes.map((c, i) => {
             const q = state.progress.quizzes["c" + i];
@@ -966,7 +966,7 @@
         });
         state.access = await api("access");
         await loadProgress();
-        toast("Access unlocked: " + res.tier + " licence. Welcome in.");
+        toast("Access granted: " + res.tier + " licence. Welcome in.");
         location.hash = "#/learn";
       } catch (err) {
         toast(err.message === "not_found" ? "That code was not recognised. Check the characters, or email us." :

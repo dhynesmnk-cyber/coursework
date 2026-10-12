@@ -16,6 +16,7 @@ A six-class community education programme for non-technical adults: small busine
 | `04-class-4-talking-to-the-software.md` | Class 4: Prompting, context, system prompts |
 | `05-class-5-software-without-the-software-bill.md` | Class 5: The collapsed cost of custom software |
 | `06-class-6-keeping-your-house-in-order.md` | Class 6: Policies, risks, shadow AI |
+| `19-registration-blurbs.md` | The six 150-word marketing descriptions for the facilitated programme |
 | `07-doc-01-system-prompt-starter-kit.md` | Document 1 of 10 |
 | `08-doc-02-data-ingestion-guide.md` | Document 2 of 10 |
 | `09-doc-03-shadow-ai-policy.md` | Document 3 of 10 |
@@ -31,6 +32,6 @@ A six-class community education programme for non-technical adults: small busine
 
 ## How to use this package
 
-- The class files are facilitator-facing: description for the registration page, detailed outline, myth to bust, exercise, glossary.
+- The class files are learner-facing teaching chapters for the self-paced course: outcomes up front, plain explanations with worked examples, a myth section, a solo exercise, a self-check and a plain-English word list. The facilitator-facing pacing and objection-handling material lives in `17-facilitator-notes.md`, and the original marketing blurbs in `19-registration-blurbs.md`.
 - The ten documents are participant-facing: formatted to hand out, pin to an intranet, or paste into a staff handbook. Each states which platforms it applies to and notes platform differences.
 - Document 6 (comparison matrix) and Document 5 (data security) contain time-sensitive facts. Both carry a "last verified" date and a quarterly review reminder.
