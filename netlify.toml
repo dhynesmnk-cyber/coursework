@@ -1,0 +1,27 @@
+# Root-level Netlify config for monorepo-style deploys.
+# Connecting this GitHub repo to Netlify with default settings now works:
+# Netlify reads this file, cds into course-site, installs function deps,
+# and publishes the course from there.
+#
+# Note: any build settings saved in the Netlify UI (base directory, publish
+# directory, build command) OVERRIDE this file. If the site was created with
+# UI settings, clear them or set Base directory = course-site in the UI.
+
+[build]
+  base = "course-site"
+  command = "npm install"
+  publish = "."
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[headers]]
+  for = "/admin.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/.netlify/functions/admin-qa"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

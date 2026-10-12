@@ -16,11 +16,16 @@ Edit `assets/js/config.js`:
 
 ## 2. Deploy the site
 
-**Option A (drag and drop):** app.netlify.com → Add new site → "Deploy manually" → drag the whole `course-site` folder in.
+**Option A (recommended): connect the GitHub repo.** In Netlify: Add new site → Import an existing project → your repo. The root `netlify.toml` already sets `base = "course-site"`, installs the function dependencies and publishes from the right folder, so default settings work. Two gotchas:
 
-**Option B (git, recommended for updates):** push this folder to a repo, connect it in Netlify. Build settings: build command **leave empty** (or `python3 tools/build_content.py` if you edit the markdown sources in the repo), publish directory `.`, functions directory `netlify/functions`, Node 20+.
+1. **UI settings override the config file.** If the site was created with a publish directory or base directory typed into the UI, those win over `netlify.toml`. For this repo the correct values are: Base directory `course-site`, Build command `npm install`, Publish directory `.` (relative to base). If you see a 404 on the site root with an otherwise successful deploy, this is almost always the cause: the site is publishing the repo root, which has no `index.html` because the course lives in `course-site/`.
+2. **Environment variables (step 5) must exist before the first deploy that uses Stripe functions.** A deploy without them still serves the site; only code issuance and the admin inbox will error until they are set.
 
-Netlify installs the function dependencies (`@netlify/blobs`, `stripe`) from `package.json` automatically at deploy time.
+**Option B (drag and drop, static only):** app.netlify.com → Add new site → "Deploy manually" → drag the `course-site` folder in. Caveat: serverless functions need their dependencies bundled, which drag-and-drop does not do; use this only to preview the UI, or run `netlify deploy` from the CLI inside `course-site` after `npm install` so functions bundle properly.
+
+**Option C (git, manual remote):** push this folder to any repo and set Base directory `course-site` in the UI if the root `netlify.toml` is not at the repo root.
+
+Netlify installs the function dependencies (`@netlify/blobs`, `stripe`) from `course-site/package.json` during the build command.
 
 ## 3. Enable sign-up / sign-in (Netlify Identity)
 
