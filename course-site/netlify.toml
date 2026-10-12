@@ -1,0 +1,17 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# The admin inbox should not be indexed or guessed at.
+[[headers]]
+  for = "/admin.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/.netlify/functions/admin-qa"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Q&A Admin — AI Without the Sales Pitch</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    .admin-wrap { max-width: 860px; margin: 30px auto; padding: 0 20px; }
+    .admin-thread { border: 1px solid var(--line); border-radius: 10px; background: #fff; padding: 18px 22px; margin-bottom: 18px; }
+    .admin-thread .meta { font-size: 12.5px; color: var(--muted); }
+    .admin-thread textarea { margin-top: 10px; }
+    .filter-row { display: flex; gap: 10px; margin-bottom: 18px; align-items: center; }
+  </style>
+</head>
+<body>
+  <div class="topbar"><span class="brand">Q&amp;A Admin</span><span class="spacer"></span>
+    <button id="admin-logout" class="hidden">Lock</button></div>
+
+  <div class="admin-wrap">
+    <!-- token gate -->
+    <div id="gate">
+      <h1>Admin access</h1>
+      <p>Enter the admin token (the ADMIN_TOKEN environment variable you set in Netlify).</p>
+      <form id="gate-form" class="stack-form">
+        <input type="password" id="gate-token" placeholder="Admin token" required>
+        <button class="btn btn-primary" type="submit" style="margin-top:10px">Unlock inbox</button>
+        <p id="gate-error" class="fine" style="color:#8a2f2f"></p>
+      </form>
+    </div>
+
+    <!-- inbox -->
+    <div id="inbox" class="hidden">
+      <div class="filter-row">
+        <h1 style="margin:0">Learner questions</h1>
+        <span class="spacer" style="flex:1"></span>
+        <label class="fine"><input type="checkbox" id="filter-open"> Unanswered only</label>
+        <button class="btn btn-ghost" id="refresh">Refresh</button>
+      </div>
+      <div id="threads"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/md.js"></script>
+  <script>
+    (function () {
+      const API = "/.netlify/functions/admin-qa";
+      const tokenKey = "awspp-admin-token";
+      let token = sessionStorage.getItem(tokenKey) || "";
+      let threads = [];
+
+      const $ = (s) => document.querySelector(s);
+
+      function esc(s) {
+        return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+
+      async function load() {
+        const res = await fetch(API, { headers: { "x-admin-token": token } });
+        if (res.status === 401) { lock(); throw new Error("bad token"); }
+        threads = (await res.json()).threads || [];
+        render();
+      }
+
+      function render() {
+        const onlyOpen = $("#filter-open").checked;
+        const list = threads.filter((t) => !onlyOpen || !(t.replies || []).length);
+        $("#threads").innerHTML = list.length ? list.map((t) => `
+          <div class="admin-thread">
+            <p class="meta">
+              <strong>${esc(t.email || "(no email)")}</strong> &middot; user ${esc((t.userId || "").slice(0, 8))}
+              ${t.lesson ? " &middot; re: " + esc(t.lesson) : ""}
+              &middot; ${esc(new Date(t.createdAt).toLocaleString())}
+              &middot; key <code>${esc(t.key)}</code>
+            </p>
+            <p style="white-space:pre-wrap">${esc(t.question)}</p>
+            ${(t.replies || []).map((r) => `<div class="qa-reply"><p class="meta">Replied ${esc(new Date(r.at).toLocaleString())}</p><p>${esc(r.text)}</p></div>`).join("")}
+            <textarea rows="4" placeholder="Write a reply (Markdown supported; it renders in the learner's course)..." id="reply-${esc(t.key)}"></textarea>
+            <p><button class="btn btn-primary" data-key="${esc(t.key)}">Send reply</button></p>
+          </div>`).join("") : '<p class="fine">Nothing here.</p>';
+
+        document.querySelectorAll(".admin-thread button[data-key]").forEach((b) =>
+          b.addEventListener("click", async () => {
+            const key = b.dataset.key;
+            const text = document.getElementById("reply-" + key).value.trim();
+            if (!text) return;
+            const res = await fetch(API, {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "x-admin-token": token },
+              body: JSON.stringify({ key: key, reply: text }),
+            });
+            if (res.ok) { load(); } else { alert("Reply failed: " + res.status); }
+          })
+        );
+      }
+
+      function unlock(t) {
+        token = t;
+        sessionStorage.setItem(tokenKey, t);
+        $("#gate").classList.add("hidden");
+        $("#inbox").classList.remove("hidden");
+        $("#admin-logout").classList.remove("hidden");
+        load().catch(() => {});
+      }
+
+      function lock() {
+        sessionStorage.removeItem(tokenKey);
+        token = "";
+        $("#gate").classList.remove("hidden");
+        $("#inbox").classList.add("hidden");
+        $("#admin-logout").classList.add("hidden");
+      }
+
+      $("#gate-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const t = $("#gate-token").value.trim();
+        const res = await fetch(API, { headers: { "x-admin-token": t } });
+        if (res.ok) unlock(t);
+        else $("#gate-error").textContent = "That token was rejected.";
+      });
+
+      $("#refresh").addEventListener("click", () => load().catch(() => {}));
+      $("#filter-open").addEventListener("change", render);
+      $("#admin-logout").addEventListener("click", lock);
+
+      if (token) { load().then(() => unlock(token)).catch(() => {}); }
+    })();
+  </script>
+</body>
+</html>

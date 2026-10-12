@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Without the Sales Pitch</title>
+  <meta name="description" content="A self-paced, plain-language AI course for small and medium businesses. Six classes, ten ready-to-use documents, quizzes, worksheets and a certificate. No hype.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e3b49'/%3E%3Crect x='8' y='9' width='16' height='3.4' rx='1.7' fill='%23fff'/%3E%3Crect x='8' y='15' width='11' height='3.4' rx='1.7' fill='%23dd9a35'/%3E%3Crect x='8' y='21' width='14' height='3.4' rx='1.7' fill='%23fff' opacity='.65'/%3E%3C/svg%3E">
+  <!-- Netlify Identity widget (registration / sign-in) -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js" defer></script>
+</head>
+<body>
+
+  <!-- Hidden Netlify Form: this is the email leg of the Q&A feature.
+       Netlify detects it at deploy time and emails you every submission. -->
+  <form name="course-question" netlify netlify-honeypot="bot-field" hidden>
+    <input name="bot-field">
+    <input name="email">
+    <input name="user_id">
+    <input name="lesson">
+    <textarea name="question"></textarea>
+  </form>
+
+  <div class="topbar">
+    <a class="brand" href="#/">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 32 32">
+          <rect x="7" y="8" width="18" height="3.6" rx="1.8" fill="#fff"/>
+          <rect x="7" y="14.6" width="12" height="3.6" rx="1.8" fill="#dd9a35"/>
+          <rect x="7" y="21.2" width="15.5" height="3.6" rx="1.8" fill="#fff" opacity=".65"/>
+        </svg>
+      </span>
+      <span class="brand-text">AI Without the Sales Pitch</span>
+    </a>
+    <span class="seller-slot"><span class="seller-name-slot"></span></span>
+    <span class="spacer"></span>
+    <span class="auth-signed-out">
+      <button class="tb-btn" onclick="netlifyIdentity.open('login')">Sign in</button>
+      <button class="tb-btn solid" onclick="netlifyIdentity.open('signup')">Get started</button>
+    </span>
+    <span class="auth-signed-in">
+      <a class="tb-btn" href="#/learn">My course</a>
+      <a class="tb-btn" href="#/qa">Questions</a>
+      <button class="tb-btn solid" onclick="netlifyIdentity.logout()">Sign out</button>
+    </span>
+  </div>
+
+  <div id="app"><!-- rendered by app.js --></div>
+  <div id="toasts"></div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/content.js"></script>
+  <script src="assets/js/quizzes.js"></script>
+  <script src="assets/js/md.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

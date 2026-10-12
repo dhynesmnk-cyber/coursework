@@ -1,0 +1,14 @@
+{
+  "name": "ai-without-the-sales-pitch-course",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Self-paced HTML course site for AI Without the Sales Pitch (Netlify: Identity + Functions + Blobs + Forms).",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "stripe": "^17.5.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

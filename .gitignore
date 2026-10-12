@@ -1,0 +1,14 @@
+# Dependencies and build artefacts
+node_modules/
+package-lock.json
+
+# Caches and temp
+.cache/
+__pycache__/
+*.pyc
+.netlify/
+.DS_Store
+
+# Editor cruft
+*.swp
+*~
