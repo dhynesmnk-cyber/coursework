@@ -12,7 +12,7 @@ When an AI tool "remembers" you, it has simply saved some notes about you as ord
 
 ## First, what "memory" actually is
 
-Picture the receptionist at your local café. They keep a sticky note about regular customers: "Sam, flat white, no sugar, runs the plumbing business". Before Sam walks in, they glance at the note. They haven't learned anything deeper about Sam; they've just got a note.
+Picture the barista at your local café. They keep a sticky note about regular customers: "Sam, flat white, no sugar, runs the plumbing business". Before Sam walks in, they glance at the note. They haven't learned anything deeper about Sam; they've just got a note.
 
 That's what AI "memory" is. The product stores ordinary text about you: either facts it picked out of your conversations ("runs a plumbing business in Geelong; prefers short emails") or notes you wrote yourself. It quietly places that text in front of your future conversations, in the same spot as the system prompt from Class 4. That's all.
 
@@ -20,7 +20,7 @@ That's what AI "memory" is. The product stores ordinary text about you: either f
 
 **Two different features hide behind the word:**
 - **Custom instructions:** text you write on purpose, applied every time. The laminated card from Class 4. Set this up carefully.
-- **Memory:** text the product writes for itself from your conversations, applied automatically. The receptionist's sticky notes. Supervise these.
+- **Memory:** text the product writes for itself from your conversations, applied automatically. The barista's sticky notes. Supervise these.
 
 ---
 

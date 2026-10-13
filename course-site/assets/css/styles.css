@@ -334,6 +334,13 @@ body.demo #tb-signout { display: none; }
   padding: 5px 16px; border-radius: 999px; box-shadow: var(--shadow-sm);
 }
 
+
+.price-extra {
+  margin: 0 0 22px; padding: 11px 15px; text-align: left;
+  background: var(--accent-tint); border: 1px solid rgba(221, 154, 53, 0.35);
+  border-radius: 10px; font-size: 13px; color: #4c3c1e;
+}
+
 /* footer */
 .footer {
   background: #0b2c37; color: #9fb3ba; padding: 44px 24px; text-align: center; font-size: 14px;

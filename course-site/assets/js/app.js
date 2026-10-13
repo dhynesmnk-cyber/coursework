@@ -358,7 +358,7 @@
           <div class="card price-card">
             <h3>Individual</h3>
             <p class="price">${esc(CFG.stripe.individualPrice)}</p>
-            <p class="price-note">one-time, per person</p>
+            <p class="price-note">${esc(CFG.stripe.individualNote || "one-time, per person")}</p>
             <ul>
               <li>One login, all six classes</li>
               <li>Quizzes, worksheets and certificate</li>
@@ -375,7 +375,7 @@
           <div class="card price-card featured">
             <h3>Whole business</h3>
             <p class="price">${esc(CFG.stripe.businessPrice)}</p>
-            <p class="price-note">one-time, whole team</p>
+            <p class="price-note">${esc(CFG.stripe.businessNote || "one-time, whole team")}</p>
             <ul>
               <li>One account for the whole team (share the login, we designed it that way)</li>
               <li>Everything in Individual</li>
@@ -383,6 +383,7 @@
               <li>The one-week rollout plan sized for up to ~50 staff</li>
               <li>Ideal for owner + office manager + team leads</li>
             </ul>
+            ${CFG.stripe.businessExtra ? '<p class="price-extra">' + esc(CFG.stripe.businessExtra) + "</p>" : ""}
             ${demo
               ? '<a class="btn btn-primary" href="#/learn">Look through it now</a>'
               : (CFG.stripe.businessLink

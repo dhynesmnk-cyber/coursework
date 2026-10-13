@@ -139,7 +139,7 @@ The right conclusion isn't fear. It's that the controls a small business needs a
 
 At Monday's team meeting, someone asks: "Are we in trouble for using ChatGPT?" In three sentences, with no jargon, answer them in a way that's honest, calm, and makes them want to tell you more. Then compare it with "The short version" and the amnesty.
 
-If your answer sounded like a warning, reread "Why bans fail". If you couldn't name the four habits, reread the kitchen.
+If your answer sounded like a warning, reread "Why bans fail". If you couldn't name the four habits, reread "The four habits that prevent almost every incident".
 
 ## Before you move on
 

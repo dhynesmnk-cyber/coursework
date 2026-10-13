@@ -39,8 +39,13 @@ window.COURSE_CONFIG = {
   stripe: {
     individualLink: "",   // EDIT ME — e.g. https://buy.stripe.com/xxxx  (Individual licence)
     businessLink: "",     // EDIT ME — e.g. https://buy.stripe.com/yyyy  (Whole-business licence)
-    individualPrice: "A$XX",   // EDIT ME — display price on the landing page
-    businessPrice: "A$XXX",    // EDIT ME — display price on the landing page
+    individualPrice: "A$50",    // EDIT ME — display price on the landing page
+    businessPrice: "A$250",     // EDIT ME — display price on the landing page
+    // Display copy around the prices. The landing page reads these, so you
+    // can reword or blank them without touching app.js.
+    individualNote: "one-time, per person",            // EDIT ME
+    businessNote: "one-time, for your whole team",     // EDIT ME
+    businessExtra: "Includes one custom-built version of any tool in the Tools section, tailored to your business.",  // EDIT ME, or set to "" to hide
   },
 
   // ── Custom builds ─────────────────────────────────────────────────────
