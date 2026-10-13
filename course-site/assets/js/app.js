@@ -787,9 +787,8 @@
   }
 
   function toolBadge(t) {
-    return t.kind === "ai"
-      ? '<span class="tool-badge ai">AI</span>'
-      : '<span class="tool-badge free">Free &middot; runs in your browser</span>';
+    if (t.kind === "ai") return '<span class="tool-badge ai">AI</span>';
+    return '<span class="tool-badge free">' + esc(t.badge || "Free · runs in your browser") + "</span>";
   }
 
   function capitalise(s) {

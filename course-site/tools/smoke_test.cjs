@@ -293,6 +293,42 @@ const tick = () => new Promise((r) => setTimeout(r, 60));
     check("an empty search says so plainly", $(".tool-output").textContent.includes("broader location"));
     check("spam act note is shown", app().includes("Spam Act 2003"));
 
+    // Website Check: fetched through site-check
+    const siteHtml = '<html><head><title>Smith Roofing</title><script type="application/ld+json">{"@type":"WebSite","name":"Smith","url":"https://smith.example"}</script></head></html>';
+    let siteReply = reply(200, { url: "https://smith.example/", status: 200, html: siteHtml, robots: { status: 200, text: "User-agent: GPTBot\nDisallow: /" } });
+    const prevFetch = w.fetch;
+    let siteUrl = "";
+    w.fetch = async (url, opts) => (String(url).includes("site-check") ? (siteUrl = String(url), siteReply) : prevFetch(url, opts));
+    w.location.hash = "#/tool/website-check";
+    await tick();
+    $('[name="url"]').value = "smith.example";
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".tool-output").innerHTML.includes("AI crawlers"));
+    check("website check calls site-check with the URL", siteUrl.includes("site-check?url=smith.example"));
+    check("website check scores structured data", $(".tool-output").textContent.includes("Structured data: 20/100"));
+    check("website check shows GPTBot blocked, ClaudeBot allowed", /GPTBot<\/code><\/td>[\s\S]*?Blocked/.test($(".tool-output").innerHTML) && /ClaudeBot<\/code><\/td>[\s\S]*?Allowed/.test($(".tool-output").innerHTML));
+    check("website check offers lines to append, not replace", $("#robots-out") && $("#robots-out").textContent.includes("User-agent: ClaudeBot") && !$("#robots-out").textContent.includes("GPTBot"));
+    check("website check suggests JSON-LD", $("#schema-out") && $("#schema-out").textContent.includes('"@type": "LocalBusiness"'));
+    siteReply = reply(502, { error: "That address points to a private network, so it can't be checked." });
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".tool-output").textContent.includes("private network"));
+    check("website check errors open the paste option", $(".tool-output").textContent.includes("private network") && $(".paste-details").open === true);
+    $('[name="html"]').value = siteHtml;
+    $('[name="robots"]').value = "";
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".tool-output").innerHTML.includes("AI crawlers"));
+    check("pasted HTML works without the function", $(".tool-output").textContent.includes("No robots.txt was found"));
+    w.fetch = prevFetch;
+
+    // AI Cost Check: live maths
+    w.location.hash = "#/tool/ai-cost";
+    await tick();
+    check("ai cost shows a verdict straight away", $(".tool-output").textContent.includes("Pays back the setup time in about 3 months"));
+    $('[name="saved"]').value = "1";
+    $("#tool-root form").dispatchEvent(new w.Event("input", { bubbles: true }));
+    await tick();
+    check("ai cost recalculates on input", $(".tool-output").textContent.includes("Doesn't pay for itself"));
+
     // Offline (saved copy / no functions): example instead
     w.fetch = async () => { throw new Error("network"); };
     w.location.hash = "#/tool/shot-prompts";

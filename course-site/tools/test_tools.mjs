@@ -384,6 +384,106 @@ section("Safe fetch");
   check("site-check refuses private addresses", r.statusCode === 502 && /private network/.test(parse(r).error), r.body);
 }
 
+// ── Browser-side pure logic (loaded into jsdom) ─────────────────────────
+section("Website Check, Follower Sorter, AI Cost Check logic");
+{
+  const { createRequire } = await import("node:module");
+  const require = createRequire(import.meta.url);
+  const { JSDOM } = require(path.join(root, "node_modules", "jsdom"));
+  const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", runScripts: "outside-only" });
+  const w = dom.window;
+  for (const f of ["md.js", "tools/registry.js", "tools/site-audit.js", "tools/follower-sorter.js", "tools/ai-cost.js"]) {
+    w.eval(fs.readFileSync(path.join(root, "assets", "js", f), "utf8"));
+  }
+  const lib = w.COURSE_TOOLS.lib;
+  const site = lib.site;
+  const doc = (html) => new w.DOMParser().parseFromString(html, "text/html");
+
+  // robots.txt
+  const ev = (txt, bot, p) => site.evaluate(site.parseRobots(txt), bot, p || "/");
+  check("no rules means allowed", ev("", "GPTBot").allowed === true);
+  check("User-agent * Disallow / blocks everyone", ev("User-agent: *\nDisallow: /", "GPTBot").allowed === false);
+  check("a crawler's own group overrides *", ev("User-agent: *\nDisallow: /\n\nUser-agent: GPTBot\nAllow: /", "GPTBot").allowed === true);
+  check("grouped agents share rules", ev("User-agent: GPTBot\nUser-agent: ClaudeBot\nDisallow: /", "ClaudeBot").allowed === false);
+  check("agent names are case-insensitive", ev("user-agent: gptbot\ndisallow: /", "GPTBot").allowed === false);
+  check("a sub-folder rule leaves the homepage open", ev("User-agent: *\nDisallow: /private/", "GPTBot").allowed === true);
+  check("empty Disallow allows everything", ev("User-agent: *\nDisallow:", "GPTBot").allowed === true);
+  check("$ anchors the end of a path", ev("User-agent: *\nDisallow: /$", "GPTBot").allowed === false && ev("User-agent: *\nDisallow: /$", "GPTBot", "/about").allowed === true);
+  check("* wildcards match", ev("User-agent: *\nDisallow: /*.pdf", "GPTBot", "/files/menu.pdf").allowed === false);
+  check("Allow wins a tie", ev("User-agent: *\nDisallow: /\nAllow: /", "GPTBot").allowed === true);
+  check("longest rule wins", ev("User-agent: *\nDisallow: /\nAllow: /blog", "GPTBot", "/blog/post").allowed === true);
+  check("comments are ignored", ev("# hi\nUser-agent: GPTBot # the openai one\nDisallow: / # all", "GPTBot").allowed === false);
+  const report = site.crawlerReport("User-agent: GPTBot\nDisallow: /\n\nUser-agent: PerplexityBot\nDisallow: /", true);
+  const optOut = site.trainingOptOut(report);
+  check("opt-out lines skip crawlers already blocked", !optOut.includes("GPTBot") && optOut.includes("User-agent: ClaudeBot\nDisallow: /"));
+  check("opt-out never touches search crawlers", !/Googlebot|Bingbot|OAI-SearchBot|PerplexityBot|Claude-SearchBot/.test(optOut));
+  check("report flags a blocked search crawler", report.find((c) => c.token === "PerplexityBot").allowed === false);
+
+  // structured data
+  const full = `<html><head><title>Smith Roofing | Ballarat</title>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"RoofingContractor","name":"Smith Roofing","url":"https://smith.example","address":{"@type":"PostalAddress","addressLocality":"Ballarat"},"telephone":"03 5300 0000","openingHours":"Mo-Fr 07:00-16:00","image":"https://smith.example/logo.png"}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Smith Roofing","url":"https://smith.example"}</script></head></html>`;
+  let a = site.audit(doc(full), { kind: "local" });
+  check("complete structured data scores 100", a.score === 100, a.checks.filter((c) => !c.ok));
+  a = site.audit(doc(`<script type="application/ld+json">{"@graph":[{"@type":"Plumber","name":"Pipe Co","url":"https://pipe.example"}]}</script>`), { kind: "local" });
+  check("@graph business with name and url scores 60", a.score === 60, a.score);
+  a = site.audit(doc(`<script type="application/ld+json">{not json</script>`), { kind: "local" });
+  check("broken JSON-LD is reported and scores 0", a.score === 0 && a.broken.length === 1, a);
+  a = site.audit(doc(`<html><head><title>Bean There | Cafe in Hobart</title><meta property="og:image" content="https://bean.example/cup.jpg"><link rel="canonical" href="https://bean.example/"></head><body><a href="tel:0362000000">Call</a></body></html>`), { kind: "food" });
+  check("no structured data scores 10", a.score === 10, a.score);
+  const suggestion = site.suggestJsonLd(a);
+  const blocks = [...suggestion.matchAll(/<script type="application\/ld\+json">\n([\s\S]*?)\n<\/script>/g)].map((m) => JSON.parse(m[1]));
+  check("suggested JSON-LD is valid JSON", blocks.length === 2);
+  check("suggestion uses the chosen business type", blocks[0]["@type"] === "Restaurant");
+  check("suggestion pre-fills what the page shows", blocks[0].name === "Bean There" && blocks[0].url === "https://bean.example/" && blocks[0].telephone === "0362000000" && blocks[0].image === "https://bean.example/cup.jpg", blocks[0]);
+
+  // follower exports
+  const fol = lib.followers;
+  const now = Date.parse("2026-10-13T00:00:00Z");
+  const sec = (daysAgo) => Math.floor(now / 1000) - daysAgo * 86400;
+  const followersJson = [
+    { title: "", media_list_data: [], string_list_data: [{ href: "https://www.instagram.com/alice", value: "alice", timestamp: sec(3) }] },
+    { title: "", media_list_data: [], string_list_data: [{ href: "https://www.instagram.com/bob", value: "bob", timestamp: sec(100) }] },
+    { title: "", media_list_data: [], string_list_data: [{ href: "https://www.instagram.com/carol", value: "carol", timestamp: sec(800) }] },
+    { junk: true },
+  ];
+  // Newer exports put the username in title and leave value out.
+  const followingJson = { relationships_following: [
+    { title: "alice", string_list_data: [{ href: "https://www.instagram.com/_u/alice", timestamp: sec(10) }] },
+    { title: "dave", string_list_data: [{ href: "https://www.instagram.com/_u/dave", timestamp: sec(20) }] },
+  ] };
+  const fp = fol.parseExport(followersJson);
+  const gp = fol.parseExport(followingJson);
+  check("followers file parsed, junk skipped", fp.accounts.length === 3 && fp.skipped === 1, fp);
+  check("following file (new format) parsed", gp.accounts.length === 2 && gp.accounts[1].username === "dave", gp);
+  const sorted = fol.sort(fp.accounts, gp.accounts, now);
+  check("mutual follows found", sorted.mutual.map((x) => x.username).join() === "alice");
+  check("not following back found", sorted.notFollowingBack.map((x) => x.username).join() === "dave");
+  check("you don't follow back found", sorted.notFollowedBack.map((x) => x.username).sort().join() === "bob,carol");
+  check("recent followers are the last 30 days", sorted.recent.map((x) => x.username).join() === "alice");
+  check("follow-date buckets", sorted.buckets["Last 30 days"] === 1 && sorted.buckets["1 to 6 months"] === 1 && sorted.buckets["Over a year"] === 1, sorted.buckets);
+  check("facebook-style export also works", fol.parseExport({ followers_v2: [{ name: "Erin", timestamp: sec(5) }] }).accounts[0].username === "Erin");
+
+  // AI cost maths
+  const r = lib.aiCost.calc({ staff: 3, hours: 4, rate: 45, saved: 20, price: 40, setup: 6 });
+  const near = (x, y) => Math.abs(x - y) < 0.01;
+  check("monthly saving", near(r.monthlySaving, 468), r.monthlySaving);
+  check("monthly cost", r.monthlyCost === 120);
+  check("net per month", near(r.net, 348));
+  check("setup cost", r.setupCost === 810);
+  check("payback months", near(r.paybackMonths, 810 / 348));
+  check("break-even percentage", near(r.breakEvenPercent, (120 / 2340) * 100));
+  check("first year", near(r.firstYear, 348 * 12 - 810));
+  const bad = lib.aiCost.calc({ staff: 2, hours: 1, rate: 30, saved: 5, price: 60, setup: 2 });
+  check("no payback when it costs more than it saves", bad.net < 0 && bad.paybackMonths === null);
+  check("zero task time has no break-even", lib.aiCost.calc({ staff: 1, hours: 0, rate: 30, saved: 5, price: 60, setup: 2 }).breakEvenPercent === null);
+
+  // CSV export guards against spreadsheet formulas
+  const csv = w.COURSE_TOOLS.toCsv([{ a: "=HYPERLINK(\"x\")", b: "plain, with comma" }], [{ key: "a", label: "A" }, { key: "b", label: "B" }]);
+  check("CSV neutralises formulas and quotes commas", csv.split("\n")[1] === "\"'=HYPERLINK(\"\"x\"\")\",\"plain, with comma\"", csv);
+  w.close();
+}
+
 // ── finish ──────────────────────────────────────────────────────────────
 await server.stop();
 fs.rmSync(blobDir, { recursive: true, force: true });
