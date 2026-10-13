@@ -107,6 +107,39 @@ export async function structured({ system, content, schema, effort, maxTokens })
   }
 }
 
+// Search the web, then answer through one strict "submit" tool, so the
+// result always matches its schema. Handles the server-side search loop
+// pausing (pause_turn) and nudges once if Claude replies in prose instead.
+// Returns the submit tool's input, or null if it never came.
+export async function searchAndSubmit({ system, content, submitTool, maxSearches, effort, nudge }) {
+  const tools = [
+    { type: webSearchType(modelId()), name: "web_search", max_uses: maxSearches || 5, user_location: { type: "approximate", country: "AU" } },
+    submitTool,
+  ];
+  const messages = [{ role: "user", content }];
+  let nudged = false;
+  for (let turn = 0; turn < 5; turn++) {
+    const resp = await createMessage({
+      max_tokens: 16000,
+      system,
+      messages,
+      tools,
+      tool_choice: { type: "auto" },
+      output_config: { effort: effort || "medium" },
+    });
+    checkStop(resp);
+    const submit = (resp.content || []).find((b) => b.type === "tool_use" && b.name === submitTool.name);
+    if (submit) return submit.input;
+    // The server-side search loop paused: send the turn back unchanged and it resumes.
+    messages.push({ role: "assistant", content: echoable(resp.content) });
+    if (resp.stop_reason === "pause_turn") continue;
+    if (nudged) break;
+    nudged = true;
+    messages.push({ role: "user", content: nudge || `Please call ${submitTool.name} now.` });
+  }
+  return null;
+}
+
 // Map anything thrown during a run to a message for the visitor. Details go
 // to the function log, never to the browser.
 export function friendlyError(err) {

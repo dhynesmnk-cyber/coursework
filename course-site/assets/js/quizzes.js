@@ -14,7 +14,7 @@ window.COURSE_QUIZZES = [
           "A program that understands language the way a person does",
         ],
         answer: 1,
-        why: "A model is numbers arranged in a structure, doing pattern-matching. It is not a lookup database and it does not understand; both of those ideas lead to trusting output you should check.",
+        why: "A model is a sound desk with billions of locked sliders: numbers doing very fast pattern-matching. It is not a lookup database and it does not understand; both of those ideas lead to trusting output you should check.",
       },
       {
         q: "ChatGPT, Claude, Gemini and Copilot are best described as:",
@@ -36,7 +36,7 @@ window.COURSE_QUIZZES = [
           "The internet was slow",
         ],
         answer: 1,
-        why: "Plausible is not the same as true. This is the mechanism behind 'hallucination', and the reason every name, number, date and citation needs a human check.",
+        why: "Plausible is not the same as true. Like a student bluffing an exam essay, it knows what a good answer sounds like, not what is true. That is 'hallucination', and the reason every name, number, date and citation needs a human check.",
       },
       {
         q: "The biggest practical shift AI brings to small business, according to this course, is:",
@@ -178,7 +178,7 @@ window.COURSE_QUIZZES = [
           "Your staff must complete a training course",
         ],
         answer: 1,
-        why: "It is not a database other users can query. The everyday risks are retention, human review and breach exposure, which is why tier choice beats any in-chat setting.",
+        why: "Think of a teacher whose habits are shaped by marking thousands of essays: your essay nudged them, but it is not in a filing cabinet anyone can open. The everyday risks are retention, human review and breaches, which is why tier choice beats any in-chat setting.",
       },
     ],
   },
@@ -216,7 +216,7 @@ window.COURSE_QUIZZES = [
           "A prompt that must be written in code",
         ],
         answer: 1,
-        why: "It is the induction briefing you give once. Document 1 has three ready-made templates and exactly where to paste them per platform.",
+        why: "It is the laminated card on a temp's desk: a briefing you write once and it is read every time. Document 1 has three ready-made templates and exactly where to paste them per platform.",
       },
       {
         q: "The most reliable way to reduce invented facts in output is to:",
@@ -265,7 +265,7 @@ window.COURSE_QUIZZES = [
           "Never, under any circumstances",
         ],
         answer: 2,
-        why: "Tier one and two builds (configuring existing tools, internal prototypes) are fair game. Tier three, anything regulated, customer-facing or critical, always needs a professional owning security and support.",
+        why: "Like DIY at home: you can change a light bulb (tier one) or build a garden shed (tier two), but wiring (tier three: anything regulated, customer-facing or critical) needs a licensed professional owning security and support.",
       },
       {
         q: "Local LLM-assisted development (code assistance running on your own hardware) matters most when:",
@@ -331,12 +331,12 @@ window.COURSE_QUIZZES = [
         q: "The four habits that prevent almost every AI incident are:",
         options: [
           "Buy, deploy, train, celebrate",
-          "Tier discipline, the decision drill before pasting, human checks on outbound work, same-day reporting",
+          "Work data on work accounts, the decision drill before pasting, a person checks what leaves the building, same-day reporting",
           "Firewalls, antivirus, backups, passwords",
           "Read, write, delete, repeat",
         ],
         answer: 1,
-        why: "Work data on work accounts; screen before pasting; check what leaves the building; tell someone the same day when it goes wrong.",
+        why: "Like food safety in a kitchen: unexciting habits that prevent almost every disaster. Work data on work accounts; screen before pasting; check what leaves the building; tell someone the same day when it goes wrong.",
       },
       {
         q: "If a client asks whether AI was used on their deliverable, the course says:",
@@ -381,6 +381,7 @@ window.COURSE_WORKSHEETS = [
       { id: "compare", label: "4. Compare: length, tone, confidence. Did either invent a detail (fake rate, fake deadline)? Which needs less editing?", type: "textarea" },
       { id: "constraint", label: "5. Now add one hard constraint (e.g. 'max 80 words, no apologies, mention work continues on schedule') and re-run on both. What changed?", type: "textarea" },
       { id: "lesson", label: "6. In one sentence: what is worth more, choosing a better product or being more specific?", type: "text" },
+      { id: "explainBack", label: "7. Explain it back: in three sentences, with no technical words, explain to a colleague what an AI model is and why it sometimes makes things up. Which part was hardest to put simply? Reread that part of the class.", type: "textarea" },
     ],
   },
   {
@@ -395,6 +396,7 @@ window.COURSE_WORKSHEETS = [
       { id: "rewrite", label: "4. Rewrite the two future sentences as honest present-tense claims", type: "textarea" },
       { id: "questions", label: "5. Write the three hardest questions from the vendor meeting script that this material avoids answering", type: "textarea" },
       { id: "verdict", label: "6. Verdict: would this vendor survive a pilot test on your data? One sentence.", type: "text" },
+      { id: "explainBack", label: "7. Explain it back: in three sentences, with no jargon, explain to a colleague how to tell an AI claim worth testing from a brochure. Which part was hardest to put simply?", type: "textarea" },
     ],
   },
   {
@@ -409,6 +411,7 @@ window.COURSE_WORKSHEETS = [
       { id: "history", label: "4. Where do you view or delete stored history? Did you delete anything old?", type: "textarea" },
       { id: "temp", label: "5. Does the tool have a temporary / no-save chat mode? Run one prompt through it. What did the interface say would change?", type: "textarea" },
       { id: "adminQuestion", label: "6. If this is a work account: one question to ask your admin next week (e.g. 'are we on a business tier where content is excluded from training?')", type: "text" },
+      { id: "explainBack", label: "7. Explain it back: in three sentences, with no jargon, explain to a new staff member where a pasted customer email goes and what they should check first. Which part was hardest to put simply?", type: "textarea" },
     ],
   },
   {
@@ -422,6 +425,7 @@ window.COURSE_WORKSHEETS = [
       { id: "testTask", label: "3. The real task you tested it on, with your real document", type: "textarea" },
       { id: "correction", label: "4. The one correction you gave it in round two, and how the output improved", type: "textarea" },
       { id: "nextWeek", label: "5. The recurring task this setup will handle next week (this is the commitment that makes it stick)", type: "text" },
+      { id: "explainBack", label: "6. Explain it back: in three sentences, with no jargon, explain to a colleague why their AI tool gives generic answers and how a standing briefing fixes it. Which part was hardest to put simply?", type: "textarea" },
     ],
   },
   {
@@ -435,6 +439,7 @@ window.COURSE_WORKSHEETS = [
       { id: "result", label: "3. What did the tool produce? Did it run? What broke?", type: "textarea" },
       { id: "firstFix", label: "4. The first thing you would fix after one realistic (fake-data) use", type: "text" },
       { id: "tier", label: "5. Tier call: usable internally next week as-is, or needs a professional before anyone outside touches it? Why?", type: "textarea" },
+      { id: "explainBack", label: "6. Explain it back: in three sentences, with no jargon, explain to your business partner what you can safely build yourself and where you'd pay a professional. Which part was hardest to put simply?", type: "textarea" },
     ],
   },
   {
@@ -450,6 +455,7 @@ window.COURSE_WORKSHEETS = [
       { id: "amnesty", label: "5. When you will ask the team what they are already using, no consequences", type: "text" },
       { id: "toolbox", label: "6. Date of the ten-minute toolbox talk (Documents 3, 8 and 10)", type: "text" },
       { id: "firstWords", label: "7. The first sentence you will say to your team on Monday", type: "textarea" },
+      { id: "explainBack", label: "8. Explain it back: in three sentences, with no jargon, answer a staff member who asks 'are we in trouble for using ChatGPT?'. Does it sound like an invitation or a warning?", type: "textarea" },
     ],
   },
 ];

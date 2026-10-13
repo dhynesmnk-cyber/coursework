@@ -1,12 +1,16 @@
 # coursework
 
-Content and software for **AI Without the Sales Pitch**, a plain-language AI education product for small and medium businesses (Australian English, no hype).
+Content and software for **AI Without the Sales Pitch** by **C&P Consulting**, a plain-language AI education product for small and medium businesses (Australian English, no hype).
+
+The material is written to the Feynman Technique: if you can't explain it simply, you don't understand it yet. Every idea arrives as an everyday picture before its technical name, every class says where its picture breaks, and every class ends with an "Explain it back" exercise. See `ai-without-the-sales-pitch/README.md`.
+
+Contact: David Hynes, [d.hynes.mnk@gmail.com](mailto:d.hynes.mnk@gmail.com) or [LinkedIn](https://www.linkedin.com/in/david-hynes-b22608249).
 
 ## What is in here
 
 | Directory | Contents |
 |---|---|
-| `ai-without-the-sales-pitch/` | The written content package: series overview, six learner-facing class chapters (outcomes, plain-language teaching, myth section, solo exercise, word list), the ten ready-to-use SMB documents, facilitator notes, registration blurbs, and research notes with sources. |
+| `ai-without-the-sales-pitch/` | The written content package: series overview, six learner-facing class chapters (outcomes, "The short version", picture-first teaching, myth section, solo exercise, "Explain it back", word list), the ten ready-to-use SMB documents, facilitator notes, registration blurbs, and research notes with sources. |
 | `course-site/` | The sellable self-paced web course: static HTML + vanilla JS single-page app for Netlify (Identity for accounts, Functions + Blobs for codes/progress/Q&A, Forms for question emails), Stripe checkout with access codes, quizzes, worksheets, personalised document downloads, printable certificate, and a token-protected admin Q&A inbox. |
 | `course-site/` Tools section | Six free, public add-on tools at `#/tools`, each tied to the class or document it puts into practice: Blog Writer, Product-Shot Prompt Builder and BeeSearch Leads (Claude, run as Netlify background jobs behind daily spend caps), plus Website Check, Instagram Follower Sorter and AI Cost Check (no AI). These replace the separate Bee Free Tools site and the Replit-hosted BeeSearch app. See section 11 of `course-site/DEPLOY.md`. |
 | `course-site/previews/` | Screenshots of the course UI and tools, rendered from the real code by `course-site/tools/screenshots.cjs`. |

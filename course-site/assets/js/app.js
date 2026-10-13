@@ -41,6 +41,15 @@
       .replace(/"/g, "&quot;");
   }
 
+  // "Contact David: email · LinkedIn" links, from config.js.
+  function contactLinks() {
+    const b = CFG.brand;
+    const parts = [];
+    if (b.supportEmail) parts.push('<a href="mailto:' + esc(b.supportEmail) + '">' + esc(b.supportEmail) + "</a>");
+    if (b.linkedin) parts.push('<a href="' + esc(b.linkedin) + '" target="_blank" rel="noopener">LinkedIn</a>');
+    return parts.join(" &middot; ");
+  }
+
   async function api(path, opts) {
     opts = opts || {};
     // Signed-in calls carry the Identity JWT so functions can see the user
@@ -249,6 +258,7 @@
         <div class="hero-cta">${heroCta}</div>
         <ul class="hero-chips">
           <li>Six classes, 15 to 25 minutes each</li>
+          <li>Plain pictures, not jargon</li>
           <li>Ten documents you can use on Monday</li>
           <li>Quizzes, worksheets and a certificate</li>
           <li>A human answers your questions</li>
@@ -393,7 +403,7 @@
         <div class="faq">
           <div class="faq-item">
             <h3>Do I need to be technical?</h3>
-            <p>No. The class about building software is about deciding what to build and checking it, not typing code. Every technical word in the course is translated in the same sentence, in brackets.</p>
+            <p>No. The course follows the Feynman Technique: if it can't be explained simply, it isn't understood yet. So every idea starts with an everyday picture (the model's desk, the bluffing student, the engine and the car) before it gets a technical name, and each class ends with you explaining it back in three plain sentences. The class about building software is about deciding what to build and checking it, not typing code.</p>
           </div>
           <div class="faq-item">
             <h3>How long does it take?</h3>
@@ -413,7 +423,7 @@
 
     <footer class="footer">
       <div class="wrap">
-        <p><strong>${esc(brand.courseTitle)}</strong> by ${esc(brand.sellerName)} &middot; Support: <a href="mailto:${esc(brand.supportEmail)}">${esc(brand.supportEmail)}</a></p>
+        <p><strong>${esc(brand.courseTitle)}</strong> by ${esc(brand.sellerName)} &middot; Contact ${esc(brand.contactName || brand.sellerName)}: ${contactLinks()}</p>
         <p class="fine">Practical guidance, not legal advice. Pricing and platform data inside the course carries a verified date and a quarterly review routine.</p>
       </div>
     </footer>`;
@@ -455,6 +465,7 @@
       <a class="side-link" href="#/certificate">Certificate <span class="badge">${quizDone}/${CONTENT.classes.length}</span></a>
       <a class="side-link" href="#/profile">Profile &amp; personalisation</a>
       <a class="side-link" href="#/extras">Extras</a>
+      <p class="side-contact">${esc(CFG.brand.sellerName)} &middot; ${esc(CFG.brand.contactName || "")}<br>${contactLinks()}</p>
     </nav>`;
   }
 
@@ -773,7 +784,8 @@
     <div class="wrap tools-public">${inner}
       <div class="card course-plug">
         <h3>${esc(CFG.brand.courseTitle)}</h3>
-        <p>These tools come from a plain-language AI course for Australian small business: six short classes and ten ready-to-use documents. <a href="#/">See what's in the course</a>.</p>
+        <p>These tools come from a plain-language AI course for Australian small business by ${esc(CFG.brand.sellerName)}: six short classes and ten ready-to-use documents. <a href="#/">See what's in the course</a>.</p>
+        <p class="fine">Contact ${esc(CFG.brand.contactName || CFG.brand.sellerName)}: ${contactLinks()}</p>
       </div>
     </div>`;
   }
@@ -808,7 +820,8 @@
             <h3>${esc(t.title)}</h3>
             <p class="fine">${esc(t.blurb)}</p>
           </a>`).join("")}
-      </div>`);
+      </div>
+      ${TOOLS ? TOOLS.customCta(null) : ""}`);
   }
 
   function viewTool(slug) {
@@ -828,7 +841,8 @@
             ? '<a href="' + x.ref.href + '">' + esc(x.ref.title) + "</a>"
             : "<strong>" + esc(x.ref.title) + "</strong>"}<br><span class="fine">${esc(capitalise(x.why))}</span></li>`).join("")}</ul>
         </aside>` : ""}
-      <div id="tool-root" data-tool="${esc(t.slug)}">${t.render()}</div>`);
+      <div id="tool-root" data-tool="${esc(t.slug)}">${t.render()}</div>
+      ${TOOLS.customCta(t)}`);
   }
 
   // "Try it" box under a class or document that a tool goes with.
@@ -1139,6 +1153,7 @@
       const tool = TOOLS.get(param);
       if (tool) tool.bind(toolRoot);
     }
+    if ((section === "tool" || section === "tools") && TOOLS) TOOLS.bindCustomCta(appRoot());
   }
 
   // Netlify Forms leg: sends the question to the site owner's email inbox.

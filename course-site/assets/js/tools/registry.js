@@ -224,6 +224,96 @@
     });
   };
 
+  // ── "Want a custom version?" box at the foot of each tool page ────────
+  function builder() {
+    const c = window.COURSE_CONFIG || {};
+    const cfg = c.customBuild || {};
+    return { name: cfg.name || "Dave", email: cfg.email || "", linkedin: (c.brand && c.brand.linkedin) || "" };
+  }
+
+  function directLinks() {
+    const b = builder();
+    const parts = [];
+    if (b.email) parts.push('<a href="mailto:' + ui.esc(b.email) + '">' + ui.esc(b.email) + "</a>");
+    if (b.linkedin) parts.push('<a href="' + ui.esc(b.linkedin) + '" target="_blank" rel="noopener">LinkedIn</a>');
+    return parts.length ? '<p class="fine cta-direct">Or contact ' + ui.esc(b.name) + " directly: " + parts.join(" &middot; ") + "</p>" : "";
+  }
+
+  T.customCta = function (tool) {
+    const esc = ui.esc;
+    const who = esc(builder().name);
+    return `
+      <aside class="custom-cta" data-tool="${esc(tool ? tool.slug : "tools")}">
+        <p><strong>${tool ? "Want a version built for your business?" : "Need a tool these don't cover?"}</strong>
+          ${who} builds custom tools like ${tool ? "this one" : "these"}, set up around your services, your data and the way you work.
+          <button type="button" class="link-btn cta-open">Ask ${who} about it</button></p>
+        ${directLinks()}
+        <form class="cta-form hidden" novalidate>
+          <input type="text" name="bot-field" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="field-row">
+            <label class="field"><span class="field-label">Your name</span>
+              <input type="text" name="name" maxlength="100" autocomplete="name"></label>
+            <label class="field"><span class="field-label">Email</span>
+              <input type="email" name="email" maxlength="200" autocomplete="email"></label>
+          </div>
+          <label class="field"><span class="field-label">What would you want it to do? (optional)</span>
+            <textarea name="message" rows="3" maxlength="2000"></textarea></label>
+          <div class="tool-actions">
+            <button class="btn btn-dark btn-sm" type="submit">Send to ${who}</button>
+            <button class="btn btn-ghost btn-sm cta-cancel" type="button">Cancel</button>
+          </div>
+          <p class="fine cta-status" aria-live="polite"></p>
+        </form>
+      </aside>`;
+  };
+
+  // Wire every custom-build box inside root. Submissions go to Netlify Forms.
+  T.bindCustomCta = function (root) {
+    Array.prototype.forEach.call(root.querySelectorAll(".custom-cta"), (box) => {
+      const form = box.querySelector(".cta-form");
+      const status = box.querySelector(".cta-status");
+      box.querySelector(".cta-open").addEventListener("click", () => {
+        form.classList.toggle("hidden");
+        if (!form.classList.contains("hidden")) form.querySelector('[name="name"]').focus();
+      });
+      box.querySelector(".cta-cancel").addEventListener("click", () => form.classList.add("hidden"));
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const v = T.formValues(form);
+        if (!v.name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) {
+          status.textContent = "Please add your name and a working email address.";
+          return;
+        }
+        const body = new URLSearchParams();
+        body.append("form-name", "custom-build");
+        body.append("bot-field", v["bot-field"] || "");
+        body.append("name", v.name);
+        body.append("email", v.email);
+        body.append("tool", box.getAttribute("data-tool"));
+        body.append("message", v.message || "");
+        const btn = form.querySelector('[type="submit"]');
+        btn.disabled = true;
+        status.textContent = "Sending...";
+        try {
+          const res = await fetch("/", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: body.toString(),
+          });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          box.innerHTML = "<p><strong>Thanks, " + ui.esc(v.name.split(" ")[0]) + ".</strong> " +
+            ui.esc(builder().name) + " will be in touch by email, usually within a business day or two.</p>";
+        } catch (err) {
+          const email = builder().email;
+          status.innerHTML = "That didn't send." + (email
+            ? ' Please email <a href="mailto:' + ui.esc(email) + '">' + ui.esc(email) + "</a> instead."
+            : " Please try again in a moment.");
+          btn.disabled = false;
+        }
+      });
+    });
+  };
+
   // Shared markup bits.
   T.aiFooter = function () {
     return '<p class="fine tool-fine">Runs on Claude (Anthropic). What you type is sent to the AI to produce the result and is not stored by this site once you have it. Free runs are limited per day.</p>';

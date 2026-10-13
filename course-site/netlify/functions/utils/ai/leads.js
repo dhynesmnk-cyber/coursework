@@ -4,9 +4,7 @@
 // Replaces the Replit app's DuckDuckGo-scraping pipeline and its Postgres
 // database; the visitor's shortlist lives in their own browser.
 import { text, int, strings } from "./validate.js";
-import { createMessage, checkStop, echoable, modelId, webSearchType, ToolError } from "../claude.js";
-
-const MAX_TURNS = 5; // pause_turn continuations + one nudge
+import { searchAndSubmit, ToolError } from "../claude.js";
 
 export function validate(input) {
   return {
@@ -74,7 +72,6 @@ function clean(lead) {
 }
 
 export async function run(v) {
-  const model = modelId();
   const brief = [
     `What we sell: ${v.offer}`,
     `Ideal customer: ${v.idealCustomer}`,
@@ -84,45 +81,25 @@ export async function run(v) {
     v.exclude.length ? `Exclude (already on the shortlist): ${v.exclude.join("; ")}` : null,
   ].filter(Boolean).join("\n");
 
-  const tools = [
-    { type: webSearchType(model), name: "web_search", max_uses: 5, user_location: { type: "approximate", country: "AU" } },
-    SUBMIT_TOOL,
-  ];
-  const messages = [{ role: "user", content: brief }];
-  let nudged = false;
-
-  for (let turn = 0; turn < MAX_TURNS; turn++) {
-    const resp = await createMessage({
-      max_tokens: 16000,
-      system: SYSTEM,
-      messages,
-      tools,
-      tool_choice: { type: "auto" },
-      output_config: { effort: "medium" },
-    });
-    checkStop(resp);
-
-    const submit = (resp.content || []).find((b) => b.type === "tool_use" && b.name === "submit_leads");
-    if (submit) {
-      const seen = new Set();
-      const leads = (submit.input.leads || [])
-        .map(clean)
-        .filter((l) => {
-          const k = (l.website || l.name).toLowerCase();
-          if (!l.name || seen.has(k)) return false;
-          seen.add(k);
-          return true;
-        })
-        .slice(0, v.count);
-      return { leads, searchSummary: String(submit.input.searchSummary || "").slice(0, 300) };
-    }
-
-    // The server-side search loop paused: send the turn back unchanged and it resumes.
-    messages.push({ role: "assistant", content: echoable(resp.content) });
-    if (resp.stop_reason === "pause_turn") continue;
-    if (nudged) break;
-    nudged = true;
-    messages.push({ role: "user", content: "Please call submit_leads now with the businesses you found (an empty list is fine)." });
+  const input = await searchAndSubmit({
+    system: SYSTEM,
+    content: brief,
+    submitTool: SUBMIT_TOOL,
+    maxSearches: 5,
+    nudge: "Please call submit_leads now with the businesses you found (an empty list is fine).",
+  });
+  if (!input) {
+    throw new ToolError("no_result", "The search didn't come back with a list. Please try again, perhaps with a broader location.");
   }
-  throw new ToolError("no_result", "The search didn't come back with a list. Please try again, perhaps with a broader location.");
+  const seen = new Set();
+  const leads = (input.leads || [])
+    .map(clean)
+    .filter((l) => {
+      const k = (l.website || l.name).toLowerCase();
+      if (!l.name || seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    })
+    .slice(0, v.count);
+  return { leads, searchSummary: String(input.searchSummary || "").slice(0, 300) };
 }

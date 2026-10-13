@@ -214,9 +214,10 @@ async function shot(page, name, opts = {}) {
     const { page, ctx } = await newPage(browser, { authed: true });
     await signIn(page);
     await page.evaluate(() => { location.hash = "#/tool/blog-writer"; });
-    await page.waitForSelector(".show-example", { timeout: 5000 });
-    await page.click(".show-example");
-    await page.locator(".tool-output").scrollIntoViewIfNeeded();
+    await page.waitForSelector("#blog-step1 .show-example", { timeout: 5000 });
+    await page.click("#blog-step1 .show-example");
+    await page.waitForSelector("#blog-post-form", { timeout: 5000 });
+    await page.locator("#blog-step2 .topic-list").scrollIntoViewIfNeeded();
     await page.waitForTimeout(300);
     await shot(page, "12-blog-writer");
     await ctx.close();

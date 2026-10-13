@@ -5,6 +5,16 @@
 
 ---
 
+## In plain terms
+
+The four big AI products are more alike than their marketing suggests. For most small businesses, the best choice is whichever one plugs into the email and files you already use, on a paid business account so your data is protected by contract. Add a local tool only if you handle genuinely sensitive material.
+
+## How to read this table
+
+Remember Class 1: the model is the engine, the product is the car. This table compares cars: what they cost, what they're good at, and what they do with your data. Engines get swapped regularly under the bonnet, so the "best at" row describes each car's strengths today, not a permanent ranking.
+
+Read the rows in this order: **Trains on your data?** first, then **Business/team** pricing, then **Best at**. The first two decide whether a product is safe and affordable for work; the third is a tiebreaker.
+
 ## The matrix
 
 | | **ChatGPT (OpenAI)** | **Claude (Anthropic)** | **Gemini (Google)** | **Copilot (Microsoft)** | **Llama (Meta) local** |
@@ -18,14 +28,25 @@
 | **Trains on your data?** | Free/Plus: yes unless you opt out. Pro: no. Business/Enterprise: no (contractual) | Free/Pro: only if you opt in (default/consent prompted since Aug 2025; opt-in extends retention to 5 years). Team/Enterprise: no | Consumer: only if Gemini Apps Activity is on. Workspace business: not outside your domain | Consumer: may be used to improve services unless opted out. Work/school account: not used to train foundation models (contractual) | Nothing is transmitted anywhere; no training happens on your chats unless you do it yourself |
 | **Business DPA / admin controls** | Yes on Business/Enterprise | Yes on Team/Enterprise | Yes via Workspace terms | Yes, strongest of the group via Microsoft DPA | Not applicable (you are the processor) |
 
-## How to actually choose (the two-question method)
+## How to choose: two questions
 
-**Question 1: What does your business already run on?** If email, files and calendar live in Microsoft 365, Copilot is the path of least resistance and best governance. If they live in Google Workspace, Gemini is the same story. If you run on neither, question 2 decides.
+**Question 1: what does your business already run on?**
+- Email, files and calendar in **Microsoft 365**: Copilot is the easiest path and the best governed, because it already knows who's allowed to see what.
+- Email, files and calendar in **Google Workspace**: Gemini, for the same reason.
+- **Neither:** question 2 decides.
 
-**Question 2: What is your dominant task?** Long documents, drafting and careful rewriting point to Claude. Broad mixed use (voice, images, custom GPT-style helpers, integrations) points to ChatGPT. Hard privacy requirements or NDA-heavy work point to a local Llama-class setup or, as the pragmatic middle, business tiers of either cloud product with their contractual protections.
+**Question 2: what's your main task?**
+- Long documents, drafting and careful rewriting: **Claude**.
+- A broad mix (voice, images, custom helpers, lots of connections to other apps): **ChatGPT**.
+- Strict privacy needs or lots of NDA work: a **local Llama-class setup**, or as the practical middle, a business tier of either cloud product with its contract protections.
 
-For a ten-person business with no strong ecosystem, the common-sense 2026 setup is: two or three seats on a business tier of one cloud product (ChatGPT Business or Claude Team, roughly US$25–30 per user per month) for day-to-day work, plus optionally one capable machine running Ollama or LM Studio with a mid-size open model for the sensitive material. Total: under A$150 per month all in, against the alternative of everyone using free personal accounts with client data, which costs nothing and risks everything.
+**The common-sense 2026 setup for a ten-person business with no strong ecosystem:** two or three seats on one cloud product's business tier (ChatGPT Business or Claude Team, roughly US$25–30 per user per month) for day-to-day work. Optionally, add one capable computer running Ollama or LM Studio with a mid-size open model for the sensitive material. Total: under A$150 per month all in. The alternative, everyone on free personal accounts with client data, costs nothing and risks everything.
 
 ## What changes fastest (re-check these quarterly)
 
-Prices and plan names (OpenAI renamed Team to Business in 2025; expect more churn). Free-tier limits. Which models sit under each product (the engine gets swapped regularly; the car keeps its name). Data-handling defaults (Anthropic's consumer terms changed materially in August 2025; Google's activity settings have moved repeatedly). Regional availability of tiers like ChatGPT Go. The comparison of capability between cloud frontier models and the best local models (the gap narrows every year).
+- **Prices and plan names.** OpenAI renamed Team to Business in 2025; expect more renaming.
+- **Free-tier limits.**
+- **Which model sits under each product.** The engine gets swapped regularly; the car keeps its name.
+- **Data-handling defaults.** Anthropic's consumer terms changed significantly in August 2025, and Google's activity settings have moved several times.
+- **Where tiers are sold.** For example, which countries get ChatGPT Go.
+- **The gap between the best cloud models and the best local models.** It narrows every year.

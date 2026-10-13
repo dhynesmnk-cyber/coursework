@@ -56,6 +56,9 @@ const tick = () => new Promise((r) => setTimeout(r, 60));
     check("ten docs listed", (html.match(/doc-pill/g) || []).length >= 10);
     check("pricing cards present", html.includes("Whole business") && html.includes("Individual"));
     check("no [object Object] leaks", !html.includes("[object Object]"));
+    check("landing footer shows C&P Consulting and contact links", html.includes("by C&amp;P Consulting") && html.includes('href="mailto:d.hynes.mnk@gmail.com"') && html.includes('href="https://www.linkedin.com/in/david-hynes-b22608249"'));
+    check("page title names C&P Consulting", w.document.title.includes("C&P Consulting"));
+    check("landing explains the Feynman approach", html.includes("Feynman Technique"));
     w.close();
   }
 
@@ -142,6 +145,24 @@ const tick = () => new Promise((r) => setTimeout(r, 60));
     await tick();
     check("profile prefilled", app().includes('value="Test Plumbing Pty Ltd"'));
 
+    // every class teaches the Feynman way; every document opens plainly
+    let allClasses = true;
+    for (let i = 0; i < 6; i++) {
+      w.location.hash = "#/class/" + i;
+      await tick();
+      const h = app();
+      if (!(h.includes("The short version") && h.includes("Explain it back") && h.includes('data-field="explainBack"'))) allClasses = false;
+    }
+    check("all six classes have the short version, explain-it-back, and the worksheet field", allClasses);
+    let allDocs = true;
+    for (let i = 0; i < 10; i++) {
+      w.location.hash = "#/doc/" + i;
+      await tick();
+      if (!/In plain terms|The policy in one breath|The universal pattern/.test(app())) allDocs = false;
+    }
+    check("all ten documents open with a plain-terms summary", allDocs);
+    check("sidebar shows the contact links", app().includes('class="side-contact"') && app().includes("d.hynes.mnk@gmail.com"));
+
     // tools inside the course
     w.location.hash = "#/class/3";
     await tick();
@@ -220,38 +241,122 @@ const tick = () => new Promise((r) => setTimeout(r, 60));
     await tick();
     check("goes-with box names the class (not linked while signed out)", app().includes("goes-with") && !app().includes('href="#/class/3"'));
 
-    // Blog: client-side validation, no request sent
-    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    // Blog step 1: website is required, no request sent without it
+    const step1 = () => $("#blog-step1");
+    const step2 = () => $("#blog-step2");
+    step1().querySelector("form").dispatchEvent(new w.Event("submit", { cancelable: true }));
     await tick();
-    check("blog asks for missing fields before sending", $(".tool-output").textContent.includes("business name") && posted.length === 0);
+    check("blog asks for a website before sending", step1().querySelector(".tool-output").textContent.includes("website address") && posted.length === 0);
+    check("step 2 stays hidden until there's something to show", step2().classList.contains("hidden"));
 
-    // Blog: full job flow
-    $('[name="business"]').value = "Smith Roofing";
-    $('[name="topic"]').value = "Winter roof checks";
-    script = [{ status: "pending" }, { status: "running" }, { status: "done", result: { title: "Winter Roof Checks", metaDescription: "Meta here", post: "Intro.\n\n## Clear the gutters\n\nDo it in autumn." } }];
-    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
-    await waitFor(() => $(".tool-output").innerHTML.includes("Clear the gutters"));
-    check("blog job posts the right tool and input", posted[0] && posted[0].tool === "blog-writer" && posted[0].input.business === "Smith Roofing" && /^[0-9a-f-]{36}$/.test(posted[0].jobId));
-    check("blog result renders the post as HTML", $(".tool-output").innerHTML.includes("<h3>Clear the gutters</h3>") && $(".tool-output").innerHTML.includes("Winter Roof Checks"));
-    check("blog result has copy and download", $(".tool-output").innerHTML.includes('data-copy="#blog-md"') && $("#blog-download"));
+    // Blog step 1: website -> business details + topics
+    $('[name="url"]').value = "smithroofing.example";
+    script = [{ status: "pending" }, { status: "running" }, { status: "done", result: {
+      url: "https://smithroofing.example/",
+      business: { name: "Smith Roofing", industry: "Roofing", location: "Ballarat VIC", services: ["Restorations", "Gutters"], audience: "Homeowners", summary: "Family-run roofers." },
+      topics: [
+        { title: "Winter Roof Checks", keyword: "roof maintenance ballarat", intent: "local", why: "Few local pages answer it." },
+        { title: "Restore or Replace?", keyword: "roof restoration vs replacement", intent: "commercial", why: "Asked before a big spend." },
+      ],
+      method: "Searched local roofing questions.",
+    } }];
+    step1().querySelector("form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => !step2().classList.contains("hidden"));
+    check("topics job sends the website", posted[0] && posted[0].tool === "blog-topics" && posted[0].input.url === "smithroofing.example" && /^[0-9a-f-]{36}$/.test(posted[0].jobId));
+    check("step 2 is filled from the website", step2().querySelector('[name="business"]').value === "Smith Roofing" && step2().querySelector('[name="location"]').value === "Ballarat VIC" && step2().querySelector('[name="notes"]').value.includes("Services: Restorations, Gutters."));
+    check("topic ideas are listed with their search phrase", (step2().innerHTML.match(/name="topicChoice"/g) || []).length === 3 && step2().textContent.includes('Targets "roof maintenance ballarat"'));
+    check("no ranking is promised", step2().textContent.includes("not guarantees"));
+
+    // Blog step 2: pick the second topic and write the post
+    step2().querySelectorAll('[name="topicChoice"]')[1].checked = true;
+    script = [{ status: "running" }, { status: "done", result: { title: "Restore or Replace?", metaDescription: "Meta here", post: "Intro.\n\n## Clear the gutters\n\nDo it in autumn." } }];
+    step2().querySelector("form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => step2().querySelector(".tool-output").innerHTML.includes("Clear the gutters"));
+    const blogPost = posted[posted.length - 1];
+    check("post job sends the picked topic, its search phrase and the details", blogPost.tool === "blog-writer" && blogPost.input.topic === "Restore or Replace?" && blogPost.input.keyword === "roof restoration vs replacement" && blogPost.input.business === "Smith Roofing" && blogPost.input.website === "https://smithroofing.example/");
+    const out2 = () => step2().querySelector(".tool-output");
+    check("blog result renders the post as HTML", out2().innerHTML.includes("<h3>Clear the gutters</h3>") && out2().innerHTML.includes("Restore or Replace?"));
+    check("blog result has copy and download", out2().innerHTML.includes('data-copy="#blog-md"') && $("#blog-download"));
     check("blog form remembers its inputs", (w.localStorage.getItem("awspp-blog-form") || "").includes("Smith Roofing"));
+
+    // Own topic instead of a suggestion
+    step2().querySelector('[name="customTopic"]').value = "Our new colourbond range";
+    step2().querySelectorAll('[name="topicChoice"]')[2].checked = true;
+    script = [{ status: "done", result: { title: "T", metaDescription: "M", post: "P" } }];
+    step2().querySelector("form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => posted[posted.length - 1].input.topic === "Our new colourbond range");
+    check("own topic is sent without a search phrase", posted[posted.length - 1].input.keyword === "");
 
     // Daily cap reached: friendly note plus the example
     script = [{ status: "error", code: "limit", error: "You've used your 5 free runs for today." }];
-    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
-    await waitFor(() => $(".tool-output").innerHTML.includes("Example output"));
-    check("cap reached shows the message and the example", $(".tool-output").textContent.includes("5 free runs") && $(".tool-output").innerHTML.includes("Example output"));
+    step2().querySelector("form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => out2().innerHTML.includes("Example output"));
+    check("cap reached shows the message and the example", out2().textContent.includes("5 free runs") && out2().innerHTML.includes("Example output"));
 
     // Other errors: message only
     script = [{ status: "error", code: "busy", error: "The AI service is busy right now." }];
-    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
-    await waitFor(() => $(".tool-output").textContent.includes("busy"));
-    check("service errors are shown plainly", $(".tool-output").innerHTML.includes("notice-bad") && !$(".tool-output").innerHTML.includes("Example output"));
+    step2().querySelector("form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => out2().textContent.includes("busy"));
+    check("service errors are shown plainly", out2().innerHTML.includes("notice-bad") && !out2().innerHTML.includes("Example output"));
 
-    // Example button
-    $(".show-example").click();
+    // Website can't be read: clear message, skip link still there
+    script = [{ status: "error", code: "site_unreachable", error: "Couldn't reach that website. You can skip this step and fill in your details instead." }];
+    step1().querySelector("form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => step1().querySelector(".tool-output").textContent.includes("Couldn't reach"));
+    check("unreadable website explains and offers the manual route", step1().querySelector(".tool-output").textContent.includes("fill in your details") && $("#blog-skip"));
+
+    // No website: skip straight to step 2
+    w.location.hash = "#/tool/leads";
     await tick();
-    check("see-an-example works without a request", $(".tool-output").innerHTML.includes("Example output"));
+    w.location.hash = "#/tool/blog-writer";
+    await tick();
+    $("#blog-skip").click();
+    await tick();
+    check("skip shows step 2 with a topic box and no suggestions", !step2().classList.contains("hidden") && (step2().innerHTML.match(/name="topicChoice"/g) || []).length === 1 && step2().querySelector('[name="customTopic"]'));
+    check("skip remembers the last business name", step2().querySelector('[name="business"]').value === "Smith Roofing");
+
+    // Example buttons
+    step1().querySelector(".show-example").click();
+    await tick();
+    check("topic example fills step 2 without a request", step1().querySelector(".tool-output").innerHTML.includes("Example output") && step2().querySelector('[name="business"]').value === "Smith Roofing (example)" && step2().textContent.includes("Roof Restoration or Replacement"));
+    step2().querySelector(".show-example").click();
+    await tick();
+    check("post example works without a request", out2().innerHTML.includes("Example output") && out2().innerHTML.includes("Ballarat Winter"));
+
+    // Custom-version box on every tool page and the gallery
+    for (const t of w.COURSE_TOOLS.list()) {
+      w.location.hash = "#/tool/" + t.slug;
+      await tick();
+      const box = $(".custom-cta");
+      check(`custom-version box on ${t.slug}`, box && box.getAttribute("data-tool") === t.slug && box.textContent.includes("Dave builds custom tools") && box.innerHTML.includes("linkedin.com/in/david-hynes-b22608249"));
+    }
+    w.location.hash = "#/tools";
+    await tick();
+    check("custom-version box on the gallery", $(".custom-cta") && $(".custom-cta").textContent.includes("Need a tool these don't cover?"));
+    w.location.hash = "#/tool/ai-cost";
+    await tick();
+    let formPosts = [];
+    const fetchBefore = w.fetch;
+    w.fetch = async (url, opts) => {
+      if (String(url) === "/") { formPosts.push(String(opts.body)); return reply(200, {}); }
+      return fetchBefore(url, opts);
+    };
+    check("custom-version form starts closed", $(".cta-form").classList.contains("hidden"));
+    $(".cta-open").click();
+    check("asking opens the form", !$(".cta-form").classList.contains("hidden"));
+    $(".cta-form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await tick();
+    check("custom-version form needs a name and email", $(".cta-status").textContent.includes("name and a working email") && formPosts.length === 0);
+    $('.cta-form [name="name"]').value = "Sam Nguyen";
+    $('.cta-form [name="email"]').value = "sam@example.com";
+    $('.cta-form [name="message"]').value = "A cost check with our own rates";
+    $(".cta-form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".custom-cta").textContent.includes("Thanks, Sam"));
+    const sent = new w.URLSearchParams(formPosts[0] || "");
+    check("enquiry goes to the custom-build Netlify form with the tool name", sent.get("form-name") === "custom-build" && sent.get("tool") === "ai-cost" && sent.get("email") === "sam@example.com" && sent.get("message").includes("own rates"));
+    check("enquiry thanks the visitor", $(".custom-cta").textContent.includes("Dave will be in touch"));
+    check("index.html declares the custom-build form for Netlify", w.document.querySelector('form[name="custom-build"][netlify]') !== null);
+    w.fetch = fetchBefore;
 
     // Leads: search, shortlist, status, pitch
     w.location.hash = "#/tool/leads";

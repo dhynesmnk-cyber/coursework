@@ -15,7 +15,9 @@ export function validate(input) {
     location: text(input, "location", { label: "location", max: 120 }),
     topic: text(input, "topic", { label: "the topic", max: 300, required: true }),
     audience: text(input, "audience", { label: "audience", max: 300 }),
-    notes: text(input, "notes", { label: "notes", max: 1000 }),
+    notes: text(input, "notes", { label: "notes", max: 1500 }),
+    keyword: text(input, "keyword", { label: "the search phrase", max: 120 }),
+    website: text(input, "website", { label: "website", max: 300 }),
     tone: oneOf(input, "tone", TONES, TONES[0]),
     length: oneOf(input, "length", LENGTHS, "900"),
   };
@@ -37,6 +39,8 @@ Structure (Markdown, no H1 in the post body):
 3. A "## Common Questions" section with three or four questions phrased the way a real person types them, each answered in a standalone 50 to 90 words.
 4. A closing of 60 to 100 words with no heading: the one thing to take away and a concrete next step for today. No "I hope this helped".
 
+If a target search phrase is given, use it (or a natural variation) in the opening paragraph, in one ## heading and in the Common Questions section. Never force it where it reads badly.
+
 Accuracy matters more than confidence. Do not invent statistics, prices, licence numbers, regulations, awards or customer stories. If a fact would need checking, phrase it generally or tell the reader what to check. Mention the business name naturally once or twice at most.
 
 Return JSON with: title (under 60 characters, includes the core topic), metaDescription (under 155 characters, plain language, no clickbait) and post (the Markdown body).`;
@@ -57,11 +61,13 @@ export async function run(v) {
     `Business name: ${v.business}`,
     v.industry && `Industry: ${v.industry}`,
     v.location && `Location: ${v.location}`,
+    v.website && `Website: ${v.website}`,
     `Topic: ${v.topic}`,
+    v.keyword && `Target search phrase: ${v.keyword}`,
     v.audience && `Target reader: ${v.audience}`,
     `Tone: ${v.tone}`,
     `Length: about ${v.length} words for the post body.`,
-    v.notes && `Extra notes from the business (treat as facts about them):\n${v.notes}`,
+    v.notes && `About the business (treat as facts about them):\n${v.notes}`,
   ].filter(Boolean);
   const out = await structured({
     system: SYSTEM,
