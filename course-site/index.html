@@ -39,6 +39,7 @@
     <span class="seller-slot"><span class="seller-name-slot"></span></span>
     <span class="tb-chip hidden" id="tb-demo">Preview mode</span>
     <span class="spacer"></span>
+    <a class="tb-btn tb-tools" href="#/tools">Free tools</a>
     <span class="auth-signed-out">
       <button class="tb-btn" onclick="netlifyIdentity.open('login')">Sign in</button>
       <button class="tb-btn solid" onclick="netlifyIdentity.open('signup')">Get started</button>
@@ -57,6 +58,11 @@
   <script src="assets/js/content.js"></script>
   <script src="assets/js/quizzes.js"></script>
   <script src="assets/js/md.js"></script>
+  <!-- Tools section: registry first, then one file per tool -->
+  <script src="assets/js/tools/registry.js"></script>
+  <script src="assets/js/tools/blog-writer.js"></script>
+  <script src="assets/js/tools/shot-prompts.js"></script>
+  <script src="assets/js/tools/leads.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>

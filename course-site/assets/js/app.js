@@ -1,6 +1,8 @@
 /* app.js — course SPA: routing, auth (Netlify Identity), progress, quizzes,
- * worksheets, Q&A, certificate, personalised document downloads.
- * Depends on: config.js, content.js, quizzes.js, md.js, netlify-identity-widget.
+ * worksheets, Q&A, certificate, personalised document downloads, and the
+ * public Tools section (tool bodies live in assets/js/tools/).
+ * Depends on: config.js, content.js, quizzes.js, md.js, tools/*.js,
+ * netlify-identity-widget.
  */
 (function () {
   "use strict";
@@ -9,6 +11,7 @@
   const CONTENT = window.COURSE_CONTENT;
   const QUIZZES = window.COURSE_QUIZZES;
   const WORKSHEETS = window.COURSE_WORKSHEETS;
+  const TOOLS = window.COURSE_TOOLS || null;
 
   const state = {
     user: null,          // identity user object
@@ -305,6 +308,7 @@
         </div>
       </div>
     </section>
+    ${landingToolsBand()}
 
     <section class="band band-dark">
       <div class="wrap">
@@ -443,6 +447,9 @@
       }).join("")}
       <p class="side-head">Document pack <span class="badge">${CONTENT.docs.length}</span></p>
       ${CONTENT.docs.map((d, i) => `<a class="side-link doc-link" href="#/doc/${i}">${esc(d.title.replace(/^Document \d+:\s*/i, ""))}</a>`).join("")}
+      ${TOOLS ? `<p class="side-head">Tools <span class="badge">${TOOLS.list().length}</span></p>
+      <a class="side-link" href="#/tools">All tools</a>
+      ${TOOLS.list().map((t) => `<a class="side-link doc-link" href="#/tool/${t.slug}">${esc(t.title)}</a>`).join("")}` : ""}
       <p class="side-head">More</p>
       <a class="side-link" href="#/qa">Ask a question ${unreadQaBadge()}</a>
       <a class="side-link" href="#/certificate">Certificate <span class="badge">${quizDone}/${CONTENT.classes.length}</span></a>
@@ -504,6 +511,7 @@
         <li>Take the five-question quiz. Four out of five passes. Pass all six and your certificate is ready.</li>
         <li>Download documents as you need them, from the Document pack in the sidebar. Add your business name in your profile first and the templates come pre-filled.</li>
         <li>Question about your situation? Use <em>Ask a question</em> on any screen. Replies from us appear in your course inbox.</li>
+        ${TOOLS ? '<li>Put a class into practice with the <a href="#/tools">free tools</a>: a blog writer, product-shot prompts, a leads finder and more. Each one links back to the class it goes with.</li>' : ""}
       </ol>
       ${qaPreview()}
     `);
@@ -549,6 +557,7 @@
 
       <section class="tab-panel" data-panel="lesson">
         <article class="prose">${window.renderMarkdown(c.md)}</article>
+        ${toolCallout(c.slug)}
         <div class="lesson-actions">
           <button class="btn ${p.completed ? "btn-done" : "btn-primary"}" id="mark-complete">
             ${p.completed ? "Completed \u2713" : "Mark class complete"}</button>
@@ -636,6 +645,7 @@
       </div>
       ${personalisationNote()}
       <article class="prose">${window.renderMarkdown(personalise(d.md))}</article>
+      ${toolCallout(d.slug)}
     `);
   }
 
@@ -754,18 +764,124 @@
     </div>`;
   }
 
+  // ── tools (public: no account needed) ─────────────────────────────────
+  // Signed-in learners see the tools inside the course layout; everyone
+  // else gets a plain public page, so the tools double as a showcase.
+  function toolsShell(inner) {
+    if (hasAccess() && state.progress) return shell(inner);
+    return `
+    <div class="wrap tools-public">${inner}
+      <div class="card course-plug">
+        <h3>${esc(CFG.brand.courseTitle)}</h3>
+        <p>These tools come from a plain-language AI course for Australian small business: six short classes and ten ready-to-use documents. <a href="#/">See what's in the course</a>.</p>
+      </div>
+    </div>`;
+  }
+
+  function contentRef(slug) {
+    let i = CONTENT.classes.findIndex((c) => c.slug === slug);
+    if (i >= 0) return { href: "#/class/" + i, title: CONTENT.classes[i].title };
+    i = CONTENT.docs.findIndex((d) => d.slug === slug);
+    if (i >= 0) return { href: "#/doc/" + i, title: CONTENT.docs[i].title };
+    return null;
+  }
+
+  function toolBadge(t) {
+    return t.kind === "ai"
+      ? '<span class="tool-badge ai">AI</span>'
+      : '<span class="tool-badge free">Free &middot; runs in your browser</span>';
+  }
+
+  function capitalise(s) {
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+  }
+
+  function viewTools() {
+    const list = TOOLS ? TOOLS.list() : [];
+    return toolsShell(`
+      ${hasAccess() ? '<p class="crumb"><a href="#/learn">Dashboard</a> &rsaquo; Tools</p>' : ""}
+      <h1>Free tools</h1>
+      <p class="lede">Small, single-job tools that put the course into practice. No sign-up. The AI tools have a daily limit; the others run entirely in your browser.</p>
+      <div class="grid grid-3 tool-grid">
+        ${list.map((t) => `
+          <a class="card doc-card tool-card" href="#/tool/${t.slug}">
+            ${toolBadge(t)}
+            <h3>${esc(t.title)}</h3>
+            <p class="fine">${esc(t.blurb)}</p>
+          </a>`).join("")}
+      </div>`);
+  }
+
+  function viewTool(slug) {
+    const t = TOOLS && TOOLS.get(slug);
+    if (!t) return viewTools();
+    const related = (t.related || [])
+      .map((r) => ({ why: r.why, ref: contentRef(r.slug) }))
+      .filter((x) => x.ref);
+    return toolsShell(`
+      <p class="crumb">${hasAccess() ? '<a href="#/learn">Dashboard</a> &rsaquo; ' : ""}<a href="#/tools">Tools</a> &rsaquo; ${esc(t.title)}</p>
+      <h1>${esc(t.title)} ${toolBadge(t)}</h1>
+      <p class="lede">${esc(t.blurb)}</p>
+      ${related.length ? `
+        <aside class="goes-with">
+          <p class="goes-with-head">Goes with the course</p>
+          <ul>${related.map((x) => `<li>${hasAccess()
+            ? '<a href="' + x.ref.href + '">' + esc(x.ref.title) + "</a>"
+            : "<strong>" + esc(x.ref.title) + "</strong>"}<br><span class="fine">${esc(capitalise(x.why))}</span></li>`).join("")}</ul>
+        </aside>` : ""}
+      <div id="tool-root" data-tool="${esc(t.slug)}">${t.render()}</div>`);
+  }
+
+  // "Try it" box under a class or document that a tool goes with.
+  function toolCallout(contentSlug) {
+    if (!TOOLS) return "";
+    const hits = TOOLS.forContent(contentSlug);
+    if (!hits.length) return "";
+    return `
+      <aside class="tool-callout">
+        <p class="goes-with-head">Try it with a free tool</p>
+        ${hits.map((h) => `<p><a href="#/tool/${h.tool.slug}"><strong>${esc(h.tool.title)}</strong></a>: ${esc(h.link.why)}</p>`).join("")}
+      </aside>`;
+  }
+
+  function landingToolsBand() {
+    if (!TOOLS) return "";
+    return `
+    <section class="band" id="tools">
+      <div class="wrap">
+        <span class="eyebrow">Free tools</span>
+        <h2>Try the ideas before you buy anything</h2>
+        <p class="section-lede">Six small tools built the way Class 5 describes: one job each, honest about their limits. No sign-up needed.</p>
+        <div class="grid grid-3 tool-grid">
+          ${TOOLS.list().map((t) => `
+            <a class="card doc-card tool-card" href="#/tool/${t.slug}">
+              ${toolBadge(t)}
+              <h3>${esc(t.title)}</h3>
+              <p class="fine">${esc(t.blurb)}</p>
+            </a>`).join("")}
+        </div>
+      </div>
+    </section>`;
+  }
+
   // ── router ────────────────────────────────────────────────────────────
   const appRoot = () => $("#app");
 
   function route() {
     stopQaPolling();
     const hash = location.hash || "#/";
-    const m = hash.match(/^#\/([a-z-]*)\/?(\d+)?/i);
+    const m = hash.match(/^#\/([a-z-]*)\/?([a-z0-9-]+)?/i);
     const section = m ? m[1] || "" : "";
-    const param = m && m[2] != null ? parseInt(m[2], 10) : null;
+    const raw = m && m[2] != null ? m[2] : null;
+    // Numeric params index classes/docs/extras; tool pages use a slug.
+    const param = raw == null ? null : /^\d+$/.test(raw) ? parseInt(raw, 10) : raw;
     let html = "";
 
-    if (CFG.demoMode && (section === "redeem" || section === "code")) {
+    if (section === "tools") {
+      html = viewTools();
+    } else if (section === "tool") {
+      html = viewTool(param);
+    } else if (CFG.demoMode && (section === "redeem" || section === "code")) {
       html = viewLearn();
     } else if (section === "code") {
       html = viewCodeIssued(sessionStorage.getItem("issued-code") || "(reload from your confirmation page)", sessionStorage.getItem("issued-tier") || "");
@@ -1017,6 +1133,13 @@
     if (su) su.addEventListener("click", () => window.netlifyIdentity.open("signup"));
     const heroLogin = $("#hero-login");
     if (heroLogin) heroLogin.addEventListener("click", () => window.netlifyIdentity.open("login"));
+
+    // tool page: the tool file wires its own form
+    const toolRoot = $("#tool-root");
+    if (section === "tool" && toolRoot && TOOLS) {
+      const tool = TOOLS.get(param);
+      if (tool) tool.bind(toolRoot);
+    }
   }
 
   // Netlify Forms leg: sends the question to the site owner's email inbox.
@@ -1088,6 +1211,7 @@
     rootStyle.setProperty("--accent", CFG.colors.accent);
     Array.prototype.forEach.call(document.querySelectorAll(".seller-name-slot"), (n) => (n.textContent = CFG.brand.sellerName));
     document.title = CFG.brand.courseTitle + " by " + CFG.brand.sellerName;
+    if (TOOLS) TOOLS.init({ esc: esc, toast: toast, renderMarkdown: window.renderMarkdown });
 
     if (CFG.demoMode) {
       // Preview build: no Identity, no Stripe. One synthetic local user,
