@@ -81,7 +81,7 @@ Redeploy after setting these. Then paste the two Payment Link URLs into `config.
 
 The Q&A has two legs. The **storage leg** (functions + blobs) makes replies appear in the learner's course. The **email leg** uses Netlify Forms so *you* get pinged: Site configuration → Forms → set the **notification email** (Form notifications → "Notify on new submissions", default is the owner email). Free plan allowance is 100 submissions/month; upgrade or add an email API in `qa.js` if you outgrow it.
 
-The hidden form named `course-question` in `index.html` is what Netlify detects at deploy time. Don't rename it without also renaming `netlifyFormName` in `config.js`.
+The hidden forms in `index.html` (`course-question` for questions, `custom-build` for custom-version enquiries from the tool pages) are what Netlify detects at deploy time. **Newer Netlify projects have form detection switched off:** open the project's **Forms** page, click **Enable form detection**, then redeploy, or submissions are silently dropped. Don't rename `course-question` without also renaming `netlifyFormName` in `config.js`.
 
 ## 7. Answering questions (your admin inbox)
 
@@ -123,7 +123,8 @@ Six small tools sit at `#/tools`, open to everyone with no account. Each one lin
 
 | Tool | Runs on | Cost per use |
 |---|---|---|
-| Blog Writer | Claude (background job) | about 5 to 10 cents on Claude Opus 5.5 |
+| Blog Writer, step 1: reads the visitor's website (homepage plus up to two about/services pages), works out their business details and suggests topics using web search | Claude with Anthropic's built-in web search | about 10 to 25 cents |
+| Blog Writer, step 2: writes the post on the picked topic (or skip step 1 and type the details in) | Claude (background job) | about 5 to 10 cents on Claude Opus 5.5 |
 | Product-Shot Prompt Builder | Claude (background job), optional photo shrunk in the browser | about 2 cents |
 | BeeSearch Leads, plus "Write a pitch" | Claude with Anthropic's built-in web search | about 15 to 30 cents a search (search results are long, and each web search is billed on top); pitches about 2 cents |
 | Website Check | the `site-check` function, no AI | nothing |
@@ -143,11 +144,13 @@ Costs are estimates; check Anthropic's pricing page for current rates.
 | `TOOLS_AI_ENABLED` | `true` | set to `false` to pause all AI tools instantly (after a redeploy) |
 | `CLAUDE_MODEL` | `claude-opus-5-5` | the Claude model. `claude-haiku-5-5` is much cheaper and faster, at some cost in writing quality. |
 
-Failed runs aren't counted. When a cap is hit or the AI is paused, the tool shows a friendly note plus its built-in example, so the showcase still works. At the default caps the worst case is about $5 a day on Opus 5.5. As a second safety net, set a monthly spend limit for the API key in the Anthropic Console.
+Each Blog Writer step counts as one run, so a post written from a website uses two. Failed runs aren't counted. When a cap is hit or the AI is paused, the tool shows a friendly note plus its built-in example, so the showcase still works. At the default caps the worst case is about $5 a day on Opus 5.5. As a second safety net, set a monthly spend limit for the API key in the Anthropic Console.
 
 **What's stored.** The job (input and result) sits in Blobs only until the browser collects it, then it's deleted. The usage counters hold a timestamp and nothing else. The Leads shortlist, notes and pitches live only in the visitor's own browser. Inputs are sent to Anthropic to generate the result.
 
 **Refusals.** On Opus 5.5 the tools ask Anthropic to re-run a request on a fallback model if Claude declines it (the API's server-side fallback, `fallbacks: "default"`). If everything declines, the visitor sees a plain message asking them to reword.
+
+**"Want a version built for your business?"** A small box at the foot of every tool page (and the tools gallery) invites visitors to ask about a custom build. The name it shows comes from `customBuild.name` in `assets/js/config.js` (currently "Dave"). Enquiries go to the Netlify Form `custom-build` (name, email, which tool, what they'd want), so they arrive by email once Forms notifications are on (section 6) and count toward the same Forms allowance as course questions. Optional: set `customBuild.email` to show an address if the form ever fails to send.
 
 **Adding a tool.** Write `assets/js/tools/<name>.js` that calls `COURSE_TOOLS.register({ slug, title, kind, blurb, related, render, bind })` (copy `ai-cost.js` for a browser-only tool, or `blog-writer.js` for an AI one), add its `<script>` tag to `index.html`, and for an AI tool add a module to `netlify/functions/utils/ai/` with `validate()` and `run()` and list it in `utils/ai/index.js`. The `related` slugs are the content slugs from `assets/js/content.js` (e.g. `class-4-talking-to-the-software`).
 

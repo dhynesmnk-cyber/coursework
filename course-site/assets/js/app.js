@@ -808,7 +808,8 @@
             <h3>${esc(t.title)}</h3>
             <p class="fine">${esc(t.blurb)}</p>
           </a>`).join("")}
-      </div>`);
+      </div>
+      ${TOOLS ? TOOLS.customCta(null) : ""}`);
   }
 
   function viewTool(slug) {
@@ -828,7 +829,8 @@
             ? '<a href="' + x.ref.href + '">' + esc(x.ref.title) + "</a>"
             : "<strong>" + esc(x.ref.title) + "</strong>"}<br><span class="fine">${esc(capitalise(x.why))}</span></li>`).join("")}</ul>
         </aside>` : ""}
-      <div id="tool-root" data-tool="${esc(t.slug)}">${t.render()}</div>`);
+      <div id="tool-root" data-tool="${esc(t.slug)}">${t.render()}</div>
+      ${TOOLS.customCta(t)}`);
   }
 
   // "Try it" box under a class or document that a tool goes with.
@@ -1139,6 +1141,7 @@
       const tool = TOOLS.get(param);
       if (tool) tool.bind(toolRoot);
     }
+    if ((section === "tool" || section === "tools") && TOOLS) TOOLS.bindCustomCta(appRoot());
   }
 
   // Netlify Forms leg: sends the question to the site owner's email inbox.

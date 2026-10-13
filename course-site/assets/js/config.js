@@ -40,6 +40,15 @@ window.COURSE_CONFIG = {
     businessPrice: "A$XXX",    // EDIT ME — display price on the landing page
   },
 
+  // ── Custom builds ─────────────────────────────────────────────────────
+  // The small "want a version built for your business?" box at the bottom
+  // of every tool page. Enquiries arrive through Netlify Forms (form name
+  // "custom-build"), emailed to you once Forms notifications are on.
+  customBuild: {
+    name: "Dave",   // EDIT ME — who builds the custom versions
+    email: "",      // optional — only shown if the form can't be sent
+  },
+
   // ── Course mechanics ──────────────────────────────────────────────────
   quizPassMark: 0.8,        // 4 of 5 correct passes a class quiz
   qaPollSeconds: 45,        // how often an open Q&A inbox checks for replies
