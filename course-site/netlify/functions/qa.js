@@ -8,14 +8,14 @@ export const handler = async (event, context) => {
   const user = identityUser(context);
   if (!user) return fail("Please sign in first.", 401);
 
-  const s = store();
+  const s = store(event);
   const prefix = `qa/${user.id}/`;
 
   if (event.httpMethod === "GET") {
     const { blobs } = await s.list({ prefix });
     const threads = [];
     for (const b of blobs) {
-      const t = await s.getJSON(b.key, { type: "json" });
+      const t = await s.get(b.key, { type: "json" });
       if (t) threads.push({ ...t, key: b.key });
     }
     threads.sort((a, b) => b.createdAt - a.createdAt);

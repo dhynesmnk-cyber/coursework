@@ -11,8 +11,8 @@ export const handler = async (event, context) => {
   if (!code || typeof code !== "string") return fail("missing code");
 
   const key = `codes/${code.trim().toUpperCase()}`;
-  const s = store();
-  const record = await s.getJSON(key, { type: "json" });
+  const s = store(event);
+  const record = await s.get(key, { type: "json" });
 
   if (!record) return fail("not_found", 404);
   if (record.redeemed && record.userId !== user.id) return fail("already_used", 409);
@@ -23,7 +23,7 @@ export const handler = async (event, context) => {
   }
 
   const userKey = `users/${user.id}`;
-  const existing = (await s.getJSON(userKey, { type: "json" })) || {};
+  const existing = (await s.get(userKey, { type: "json" })) || {};
   await s.setJSON(userKey, {
     ...existing,
     email: user.email || existing.email || "",

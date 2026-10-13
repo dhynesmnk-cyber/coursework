@@ -198,6 +198,54 @@ async function shot(page, name, opts = {}) {
     await ctx.close();
   }
 
+  // 11. Tools gallery
+  {
+    const { page, ctx } = await newPage(browser, { authed: true });
+    await signIn(page);
+    await page.evaluate(() => { location.hash = "#/tools"; });
+    await page.waitForSelector(".tool-card", { timeout: 5000 });
+    await page.waitForTimeout(300);
+    await shot(page, "11-tools-gallery");
+    await ctx.close();
+  }
+
+  // 12. Blog Writer with its example output
+  {
+    const { page, ctx } = await newPage(browser, { authed: true });
+    await signIn(page);
+    await page.evaluate(() => { location.hash = "#/tool/blog-writer"; });
+    await page.waitForSelector(".show-example", { timeout: 5000 });
+    await page.click(".show-example");
+    await page.locator(".tool-output").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
+    await shot(page, "12-blog-writer");
+    await ctx.close();
+  }
+
+  // 13. Website Check result (site-check answered locally). No `authed`
+  // stub here: it replaces fetch, and the route below must see the call.
+  {
+    const { page, ctx } = await newPage(browser);
+    await ctx.route("**/.netlify/functions/site-check**", (r) => r.fulfill({
+      status: 200, contentType: "application/json",
+      body: JSON.stringify({
+        url: "https://nguyenplumbing.example/", status: 200,
+        html: '<html><head><title>Nguyen Plumbing | Footscray</title><meta property="og:site_name" content="Nguyen Plumbing"><script type="application/ld+json">{"@type":"WebSite","name":"Nguyen Plumbing","url":"https://nguyenplumbing.example"}</script></head><body><a href="tel:0390000000">Call</a></body></html>',
+        robots: { status: 200, text: "User-agent: GPTBot\nDisallow: /" },
+      }),
+    }));
+    await signIn(page);
+    await page.evaluate(() => { location.hash = "#/tool/website-check"; });
+    await page.waitForSelector('[name="url"]', { timeout: 5000 });
+    await page.fill('[name="url"]', "nguyenplumbing.example");
+    await page.click('#tool-root button[type="submit"]');
+    await page.waitForSelector("#schema-out", { timeout: 5000 });
+    await page.locator(".tool-output").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
+    await shot(page, "13-website-check");
+    await ctx.close();
+  }
+
   await browser.close();
   console.log("done");
 })();

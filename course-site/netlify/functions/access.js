@@ -9,17 +9,17 @@ export const handler = async (event, context) => {
   const user = identityUser(context);
   if (!user) return fail("Please sign in first.", 401);
 
-  const s = store();
+  const s = store(event);
   const key = `users/${user.id}`;
 
   if (event.httpMethod === "GET") {
-    const record = (await s.getJSON(key, { type: "json" })) || {};
+    const record = (await s.get(key, { type: "json" })) || {};
     return json({ tier: record.tier || null, email: user.email || record.email || "", ...pick(record) });
   }
 
   if (event.httpMethod === "POST") {
     const body = parseBody(event);
-    const existing = (await s.getJSON(key, { type: "json" })) || {};
+    const existing = (await s.get(key, { type: "json" })) || {};
     const next = { ...existing, email: user.email || existing.email || "" };
     for (const f of ALLOWED) {
       if (typeof body[f] === "string") next[f] = body[f].slice(0, 200);

@@ -1,10 +1,14 @@
 // Shared helpers for course functions. Files in this folder are bundled
 // but not exposed as endpoints.
 import crypto from "node:crypto";
-import { getStore } from "@netlify/blobs";
+import { getStore, connectLambda } from "@netlify/blobs";
 
-export function store() {
-  // On Netlify, siteID and token are injected automatically at runtime.
+// Lambda-style handlers (export const handler) do not get the Blobs context
+// automatically: it arrives base64-encoded on event.blobs and must be passed
+// to connectLambda() before getStore(). Tests pass no event.blobs and stub
+// the store instead.
+export function store(event) {
+  if (event && event.blobs) connectLambda(event);
   return getStore({ name: "course" });
 }
 
@@ -24,10 +28,12 @@ export function fail(error, status = 400) {
 }
 
 // Identity user from a request made by a signed-in visitor on the same site.
+// Netlify verifies the "Authorization: Bearer <jwt>" header and exposes the
+// decoded claims on context.clientContext.user (sub = user id).
 export function identityUser(context) {
-  const id = context && context.identity && context.identity.user;
-  if (!id || !id.id) return null;
-  return { id: id.id, email: id.email || "" };
+  const u = context && context.clientContext && context.clientContext.user;
+  if (!u || !u.sub) return null;
+  return { id: u.sub, email: u.email || "" };
 }
 
 export function safeToken(a, b) {

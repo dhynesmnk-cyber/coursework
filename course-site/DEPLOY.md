@@ -1,6 +1,6 @@
 # DEPLOY.md — Launch guide for "AI Without the Sales Pitch" (self-paced edition)
 
-Everything runs on Netlify's own building blocks: static hosting, **Identity** (registration/sign-in), **Functions** (the small API), **Blobs** (storage for codes, progress and Q&A) and **Forms** (the email leg of the question feature). No other services except Stripe. Expected running cost at small-business scale: **$0/month** on Netlify's free plan plus Stripe's per-transaction fees.
+Everything runs on Netlify's own building blocks: static hosting, **Identity** (registration/sign-in), **Functions** (the small API), **Blobs** (storage for codes, progress, Q&A and tool jobs) and **Forms** (the email leg of the question feature). The only other services are Stripe (payments) and Anthropic (the three AI tools). Expected running cost at small-business scale: Netlify Pro (needed for the AI tools' background functions), Stripe's per-transaction fees, and Anthropic usage, which the daily caps keep to a few dollars a day at most (see section 11).
 
 ---
 
@@ -67,8 +67,11 @@ Site configuration → Environment variables:
 | `STRIPE_PRICE_INDIVIDUAL` | the Individual **price ID** (`price_...`) from the product page — comma-separate several if you re-price later |
 | `STRIPE_PRICE_BUSINESS` | the Business **price ID** (`price_...`) |
 | `ADMIN_TOKEN` | a long random string you invent (e.g. output of `openssl rand -hex 24`). This protects `/admin.html`. |
+| `ANTHROPIC_API_KEY` | your Anthropic API key, for the three AI tools. Without it those tools show a "not switched on yet" note plus an example output; everything else works. |
 
-Optional: `STRIPE_BUSINESS_MIN_AMOUNT` — fallback tier detection in cents (default `10000` = $100) if a price ID is ever misconfigured; a paid session at or above that amount issues a business code.
+Optional: `STRIPE_BUSINESS_MIN_AMOUNT` — fallback tier detection in cents (default `10000` = $100) if a price ID is ever misconfigured; a paid session at or above that amount issues a business code. The tools have their own optional variables, listed in section 11.
+
+Give each variable the **Functions** scope (or "All scopes"). The functions read them at run time, so a change takes effect on the next deploy.
 
 Redeploy after setting these. Then paste the two Payment Link URLs into `config.js` (`stripe.individualLink`, `stripe.businessLink`).
 
@@ -90,8 +93,11 @@ Visit `https://YOUR-SITE/admin.html`, enter your `ADMIN_TOKEN`. You'll see every
 2. Ask a question as the test learner; answer it in `/admin.html`; confirm it appears in the learner session.
 3. Fill the profile (business name), download Document 3, confirm the templates come out with the business name pre-filled.
 4. Pass all six quizzes on a test account and print the certificate.
-5. Local preview of the UI only: `python3 -m http.server` in this folder (functions won't run locally without `netlify dev`; for full local testing: `npm i -g netlify-cli && netlify login && netlify link && netlify dev`).
-6. Automated smoke test: `npm install --no-save jsdom && node tools/smoke_test.cjs` (18 checks across landing, lessons, quizzes, worksheets, personalisation, Q&A, certificate, profile).
+5. Local preview of the UI only: `python3 -m http.server` in this folder (functions won't run locally without `netlify dev`; for full local testing: `npm i -g netlify-cli && netlify login && netlify link && netlify dev`). Without functions, the AI tools fall back to their example output and Website Check to its paste-the-HTML mode.
+6. Automated tests, run from this folder after `npm install && npm install --no-save jsdom`:
+   - `node tools/smoke_test.cjs`: the real `index.html` and scripts in jsdom (landing, lessons, quizzes, worksheets, personalisation, Q&A, certificate, profile, and every tool page including the AI job flow with a stubbed backend).
+   - `node tools/test_tools.mjs`: the Netlify functions run against a local Netlify Blobs server (sign-in, progress, Q&A, codes, the tool job runner with a stubbed Claude client, the spend caps, the safe fetcher) plus the tools' pure logic (robots.txt rules, structured-data scoring, Instagram export parsing, cost maths).
+7. Tools, after deploying with `ANTHROPIC_API_KEY` set: run each AI tool once (Blog Writer, Product-Shot Prompt Builder with and without a photo, BeeSearch Leads, then "Write a pitch" on a saved lead), run Website Check on your own site, and confirm in the Netlify dashboard (Blobs, store `course`) that `tools/usage/...` keys appear. Then set `TOOLS_PER_VISITOR_DAILY=1`, redeploy, and confirm your second run is politely refused.
 
 ## 9. Updating content later
 
@@ -108,8 +114,42 @@ That regenerates `assets/js/content.js`. Redeploy. Quizzes and worksheets are ha
 - **Netlify Identity free tier** covers ~50k monthly active users; you'll hit the paid tier long after this course is a success story.
 - **Forms allowance** 100/month free: at $ per question that's a healthy course; upgrade path is Netlify Pro or an email API inside `qa.js`.
 - **Shared business-tier login** is by design (per your tier choice). Progress is per-account, so a shared login shares progress; that's accepted for team licences. If you later want per-person seats inside a business, the blob layout (`users/{id}`, `progress/{id}`) extends to an `orgId` cleanly.
-- **Blobs** have no expiry; storage of codes/progress/Q&A at this scale is negligible.
+- **Blobs** have no expiry; storage of codes/progress/Q&A at this scale is negligible. Tool jobs are deleted as soon as the result is collected, and usage counters older than a week are pruned automatically.
 - **No community, by design.** Q&A is one-to-one between you and each learner, as specced.
+
+## 11. The Tools section (public add-ons)
+
+Six small tools sit at `#/tools`, open to everyone with no account. Each one links to the class or document it goes with, and those class and document pages link back with a "Try it with a free tool" box. Learners see them inside the course layout; visitors see a public page with a link to the course.
+
+| Tool | Runs on | Cost per use |
+|---|---|---|
+| Blog Writer | Claude (background job) | about 5 to 10 cents on Claude Opus 5.5 |
+| Product-Shot Prompt Builder | Claude (background job), optional photo shrunk in the browser | about 2 cents |
+| BeeSearch Leads, plus "Write a pitch" | Claude with Anthropic's built-in web search | about 15 to 30 cents a search (search results are long, and each web search is billed on top); pitches about 2 cents |
+| Website Check | the `site-check` function, no AI | nothing |
+| Instagram Follower Sorter | the visitor's browser only | nothing |
+| AI Cost Check | the visitor's browser only | nothing |
+
+Costs are estimates; check Anthropic's pricing page for current rates.
+
+**Needs Netlify Pro.** The AI tools run as background functions (`tool-run-background`), which Netlify offers on Pro and above. They get up to 15 minutes, so a long post or a web search never hits the normal 30-second function limit. The browser starts the job, then checks `tool-status` every few seconds and shows the result when it's ready.
+
+**Spend guard.** No login is needed, so every AI run counts against two daily caps (reset at midnight Sydney time), stored in Blobs:
+
+| Variable | Default | What it does |
+|---|---|---|
+| `TOOLS_DAILY_LIMIT` | `30` | AI runs per day across the whole site |
+| `TOOLS_PER_VISITOR_DAILY` | `5` | AI runs per day per visitor (a salted hash of their IP; no raw IP is stored) |
+| `TOOLS_AI_ENABLED` | `true` | set to `false` to pause all AI tools instantly (after a redeploy) |
+| `CLAUDE_MODEL` | `claude-opus-5-5` | the Claude model. `claude-haiku-5-5` is much cheaper and faster, at some cost in writing quality. |
+
+Failed runs aren't counted. When a cap is hit or the AI is paused, the tool shows a friendly note plus its built-in example, so the showcase still works. At the default caps the worst case is about $5 a day on Opus 5.5. As a second safety net, set a monthly spend limit for the API key in the Anthropic Console.
+
+**What's stored.** The job (input and result) sits in Blobs only until the browser collects it, then it's deleted. The usage counters hold a timestamp and nothing else. The Leads shortlist, notes and pitches live only in the visitor's own browser. Inputs are sent to Anthropic to generate the result.
+
+**Refusals.** On Opus 5.5 the tools ask Anthropic to re-run a request on a fallback model if Claude declines it (the API's server-side fallback, `fallbacks: "default"`). If everything declines, the visitor sees a plain message asking them to reword.
+
+**Adding a tool.** Write `assets/js/tools/<name>.js` that calls `COURSE_TOOLS.register({ slug, title, kind, blurb, related, render, bind })` (copy `ai-cost.js` for a browser-only tool, or `blog-writer.js` for an AI one), add its `<script>` tag to `index.html`, and for an AI tool add a module to `netlify/functions/utils/ai/` with `validate()` and `run()` and list it in `utils/ai/index.js`. The `related` slugs are the content slugs from `assets/js/content.js` (e.g. `class-4-talking-to-the-software`).
 
 ## File map
 
@@ -125,6 +165,15 @@ course-site/
 ├── assets/js/md.js             # markdown renderer
 ├── assets/js/quizzes.js        # 6 quizzes + 6 worksheets (hand-edited)
 ├── assets/js/content.js        # GENERATED from content-src — don't edit
+├── assets/js/tools/
+│   ├── registry.js             # shared tool plumbing (job runner, helpers)
+│   ├── blog-writer.js          # one file per tool ...
+│   ├── shot-prompts.js
+│   ├── leads.js
+│   ├── site-audit.js           # Website Check logic (schema + robots.txt)
+│   ├── website-check.js
+│   ├── follower-sorter.js
+│   └── ai-cost.js
 ├── content-src/*.md            # the course text (edit here, rebuild)
 ├── netlify/functions/
 │   ├── issue-code.js           # Stripe success → access code
@@ -133,8 +182,18 @@ course-site/
 │   ├── progress.js             # lessons/quizzes/worksheets per learner
 │   ├── qa.js                   # learner questions + replies store
 │   ├── admin-qa.js             # your inbox API (ADMIN_TOKEN)
-│   └── utils/helpers.js        # blobs, identity, JSON helpers
+│   ├── tool-run-background.js  # runs one AI tool job (background, 15 min)
+│   ├── tool-status.js          # the browser polls this for the result
+│   ├── site-check.js           # fetches a page + robots.txt for Website Check
+│   └── utils/
+│       ├── helpers.js          # blobs, identity, JSON helpers
+│       ├── claude.js           # model, effort, refusal fallback, errors
+│       ├── limits.js           # daily caps + kill switch
+│       ├── safe-fetch.js       # public-internet-only page fetcher
+│       └── ai/                 # one module per AI tool (prompt + schema)
 └── tools/
     ├── build_content.py        # markdown → content.js
-    └── smoke_test.cjs          # 18-check UI test
+    ├── smoke_test.cjs          # UI test in jsdom
+    ├── test_tools.mjs          # functions + tool logic tests
+    └── screenshots.cjs         # regenerates previews/
 ```

@@ -24,13 +24,17 @@ function makeDom(opts = {}) {
   const w = dom.window;
   // jsdom does not implement scrollTo; stub it.
   w.scrollTo = () => {};
-  // Load the local scripts in the same order index.html does.
-  for (const f of ["assets/js/config.js", "assets/js/content.js", "assets/js/quizzes.js", "assets/js/md.js"]) {
-    w.eval(read(f));
+  // Load the local scripts in the same order index.html does (app.js last,
+  // via bootApp). Reading the list from index.html keeps the two in step.
+  for (const f of LOCAL_SCRIPTS) {
+    if (!f.endsWith("/app.js")) w.eval(read(f));
   }
   if (!opts.demo) w.eval("window.COURSE_CONFIG.demoMode = false;");
   return { dom, w };
 }
+
+const LOCAL_SCRIPTS = (read("index.html").match(/<script src="(assets\/js\/[^"]+)"/g) || [])
+  .map((tag) => tag.match(/src="([^"]+)"/)[1]);
 
 function bootApp(w) {
   w.eval(read("assets/js/app.js"));
@@ -138,6 +142,21 @@ const tick = () => new Promise((r) => setTimeout(r, 60));
     await tick();
     check("profile prefilled", app().includes('value="Test Plumbing Pty Ltd"'));
 
+    // tools inside the course
+    w.location.hash = "#/class/3";
+    await tick();
+    check("class 4 links to the Blog Writer", app().includes('href="#/tool/blog-writer"') && app().includes("tool-callout"));
+    w.location.hash = "#/doc/3";
+    await tick();
+    check("doc 4 links to a tool", app().includes("tool-callout") && app().includes('href="#/tool/blog-writer"'));
+    w.location.hash = "#/tools";
+    await tick();
+    check("signed-in tools page sits inside the course layout", app().includes('class="sidebar"') && app().includes("tool-card"));
+    check("sidebar lists the tools", app().includes('class="side-link doc-link" href="#/tool/leads"'));
+    w.location.hash = "#/tool/blog-writer";
+    await tick();
+    check("goes-with links are live for learners", app().includes('href="#/class/3"'));
+
     w.close();
   }
 
@@ -159,6 +178,178 @@ const tick = () => new Promise((r) => setTimeout(r, 60));
     await tick();
     check("qa sending disabled with explanation", app().includes("Preview mode: question sending is switched off"));
     check("send button disabled", app().includes("disabled"));
+    w.close();
+  }
+
+  // ── 4. Tools, signed out (public showcase) ───────────────────────────
+  console.log("Tools (signed out):");
+  {
+    const { w } = makeDom();
+    // Fake backend for the AI job flow. jobs[] scripts what tool-status returns.
+    let script = [];
+    const posted = [];
+    const reply = (status, o) => ({ ok: status < 400, status, json: async () => o, text: async () => JSON.stringify(o) });
+    w.fetch = async (url, opts) => {
+      const u = String(url);
+      if (u.includes("tool-run-background")) { posted.push(JSON.parse(opts.body)); return reply(202, {}); }
+      if (u.includes("tool-status")) return reply(200, script.length > 1 ? script.shift() : script[0]);
+      return reply(200, {});
+    };
+    bootApp(w);
+    w.COURSE_TOOLS.pollMs = 5;
+    await tick();
+    const app = () => w.document.querySelector("#app").innerHTML;
+    const $ = (s) => w.document.querySelector(s);
+    const waitFor = async (fn) => { for (let i = 0; i < 60 && !fn(); i++) await tick(); return fn(); };
+
+    check("landing has a free tools band", app().includes('id="tools"') && (app().match(/tool-card/g) || []).length >= 3);
+    check("landing still lists exactly six classes", (app().match(/<strong>Class \d/g) || []).length === 6);
+    check("top bar links to the tools", w.document.querySelector(".topbar").innerHTML.includes('href="#/tools"'));
+
+    w.location.hash = "#/tools";
+    await tick();
+    const count = w.COURSE_TOOLS.list().length;
+    check("tools gallery is public", app().includes("Free tools") && (app().match(/class="card doc-card tool-card"/g) || []).length === count);
+    check("public tools page has no course sidebar", !app().includes('class="sidebar"') && app().includes("course-plug"));
+    for (const t of w.COURSE_TOOLS.list()) {
+      w.location.hash = "#/tool/" + t.slug;
+      await tick();
+      check(`tool page renders: ${t.slug}`, app().includes(t.title) && $("#tool-root") && $("#tool-root").innerHTML.length > 200 && !app().includes("[object Object]"));
+    }
+    w.location.hash = "#/tool/blog-writer";
+    await tick();
+    check("goes-with box names the class (not linked while signed out)", app().includes("goes-with") && !app().includes('href="#/class/3"'));
+
+    // Blog: client-side validation, no request sent
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await tick();
+    check("blog asks for missing fields before sending", $(".tool-output").textContent.includes("business name") && posted.length === 0);
+
+    // Blog: full job flow
+    $('[name="business"]').value = "Smith Roofing";
+    $('[name="topic"]').value = "Winter roof checks";
+    script = [{ status: "pending" }, { status: "running" }, { status: "done", result: { title: "Winter Roof Checks", metaDescription: "Meta here", post: "Intro.\n\n## Clear the gutters\n\nDo it in autumn." } }];
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".tool-output").innerHTML.includes("Clear the gutters"));
+    check("blog job posts the right tool and input", posted[0] && posted[0].tool === "blog-writer" && posted[0].input.business === "Smith Roofing" && /^[0-9a-f-]{36}$/.test(posted[0].jobId));
+    check("blog result renders the post as HTML", $(".tool-output").innerHTML.includes("<h3>Clear the gutters</h3>") && $(".tool-output").innerHTML.includes("Winter Roof Checks"));
+    check("blog result has copy and download", $(".tool-output").innerHTML.includes('data-copy="#blog-md"') && $("#blog-download"));
+    check("blog form remembers its inputs", (w.localStorage.getItem("awspp-blog-form") || "").includes("Smith Roofing"));
+
+    // Daily cap reached: friendly note plus the example
+    script = [{ status: "error", code: "limit", error: "You've used your 5 free runs for today." }];
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".tool-output").innerHTML.includes("Example output"));
+    check("cap reached shows the message and the example", $(".tool-output").textContent.includes("5 free runs") && $(".tool-output").innerHTML.includes("Example output"));
+
+    // Other errors: message only
+    script = [{ status: "error", code: "busy", error: "The AI service is busy right now." }];
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".tool-output").textContent.includes("busy"));
+    check("service errors are shown plainly", $(".tool-output").innerHTML.includes("notice-bad") && !$(".tool-output").innerHTML.includes("Example output"));
+
+    // Example button
+    $(".show-example").click();
+    await tick();
+    check("see-an-example works without a request", $(".tool-output").innerHTML.includes("Example output"));
+
+    // Leads: search, shortlist, status, pitch
+    w.location.hash = "#/tool/leads";
+    await tick();
+    $('[name="offer"]').value = "Small-batch gin";
+    $('[name="idealCustomer"]').value = "Bottle shops";
+    $('[name="location"]').value = "Fitzroy VIC";
+    script = [{ status: "done", result: { searchSummary: "Searched.", leads: [
+      { name: "Cellar One", website: "https://cellar-one.example", location: "Fitzroy VIC", category: "bottle shop", whyFit: "Local producers.", publicContact: "hi@cellar-one.example", sourceUrl: "https://cellar-one.example" },
+      { name: "Bar Two", website: "", location: "Fitzroy VIC", category: "bar", whyFit: "Gin list.", publicContact: "", sourceUrl: "https://directory.example/bar-two" },
+    ] } }];
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".tool-output").innerHTML.includes("Cellar One"));
+    check("leads render as cards", (app().match(/data-add="/g) || []).length === 2);
+    check("lead contact email becomes a mailto link", app().includes('href="mailto:hi@cellar-one.example"'));
+    $('[data-add="0"]').click();
+    await tick();
+    const saved = JSON.parse(w.localStorage.getItem("awspp-leads-shortlist") || "[]");
+    check("adding a lead saves it in this browser", saved.length === 1 && saved[0].name === "Cellar One" && saved[0].status === "New");
+    check("shortlist shows the saved lead", $("#leads-list").textContent.includes("Cellar One"));
+    const sel = $('[data-status="0"]');
+    sel.value = "Contacted";
+    sel.dispatchEvent(new w.Event("change", { bubbles: true }));
+    check("status change is saved", JSON.parse(w.localStorage.getItem("awspp-leads-shortlist"))[0].status === "Contacted");
+    $('[data-pitch="0"]').click();
+    await tick();
+    $('[data-pitch-form="0"] [name="senderName"]').value = "Dana";
+    script = [{ status: "done", result: { subject: "Gin for Cellar One", body: "Hi team,\n\nShort note.\n\nDana" } }];
+    $('[data-pitch-form="0"]').dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $("#leads-list").innerHTML.includes("Gin for Cellar One"));
+    const pitchPost = posted[posted.length - 1];
+    check("pitch job sends the lead and offer", pitchPost.tool === "pitch" && pitchPost.input.lead.name === "Cellar One" && pitchPost.input.offer === "Small-batch gin");
+    check("pitch is shown and kept with the lead", $("#leads-list").innerHTML.includes("Gin for Cellar One") && JSON.parse(w.localStorage.getItem("awspp-leads-shortlist"))[0].pitch.subject === "Gin for Cellar One");
+    script = [{ status: "done", result: { searchSummary: "", leads: [] } }];
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".tool-output").textContent.includes("No matching businesses"));
+    const second = posted[posted.length - 1];
+    check("next search excludes shortlisted leads", second.tool === "leads" && second.input.exclude.indexOf("Cellar One") >= 0);
+    check("an empty search says so plainly", $(".tool-output").textContent.includes("broader location"));
+    check("spam act note is shown", app().includes("Spam Act 2003"));
+
+    // Website Check: fetched through site-check
+    const siteHtml = '<html><head><title>Smith Roofing</title><script type="application/ld+json">{"@type":"WebSite","name":"Smith","url":"https://smith.example"}</script></head></html>';
+    let siteReply = reply(200, { url: "https://smith.example/", status: 200, html: siteHtml, robots: { status: 200, text: "User-agent: GPTBot\nDisallow: /" } });
+    const prevFetch = w.fetch;
+    let siteUrl = "";
+    w.fetch = async (url, opts) => (String(url).includes("site-check") ? (siteUrl = String(url), siteReply) : prevFetch(url, opts));
+    w.location.hash = "#/tool/website-check";
+    await tick();
+    $('[name="url"]').value = "smith.example";
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".tool-output").innerHTML.includes("AI crawlers"));
+    check("website check calls site-check with the URL", siteUrl.includes("site-check?url=smith.example"));
+    check("website check scores structured data", $(".tool-output").textContent.includes("Structured data: 20/100"));
+    check("website check shows GPTBot blocked, ClaudeBot allowed", /GPTBot<\/code><\/td>[\s\S]*?Blocked/.test($(".tool-output").innerHTML) && /ClaudeBot<\/code><\/td>[\s\S]*?Allowed/.test($(".tool-output").innerHTML));
+    check("website check offers lines to append, not replace", $("#robots-out") && $("#robots-out").textContent.includes("User-agent: ClaudeBot") && !$("#robots-out").textContent.includes("GPTBot"));
+    check("website check suggests JSON-LD", $("#schema-out") && $("#schema-out").textContent.includes('"@type": "LocalBusiness"'));
+    siteReply = reply(502, { error: "That address points to a private network, so it can't be checked." });
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".tool-output").textContent.includes("private network"));
+    check("website check errors open the paste option", $(".tool-output").textContent.includes("private network") && $(".paste-details").open === true);
+    $('[name="html"]').value = siteHtml;
+    $('[name="robots"]').value = "";
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".tool-output").innerHTML.includes("AI crawlers"));
+    check("pasted HTML works without the function", $(".tool-output").textContent.includes("No robots.txt was found"));
+    w.fetch = prevFetch;
+
+    // AI Cost Check: live maths
+    w.location.hash = "#/tool/ai-cost";
+    await tick();
+    check("ai cost shows a verdict straight away", $(".tool-output").textContent.includes("Pays back the setup time in about 3 months"));
+    $('[name="saved"]').value = "1";
+    $("#tool-root form").dispatchEvent(new w.Event("input", { bubbles: true }));
+    await tick();
+    check("ai cost recalculates on input", $(".tool-output").textContent.includes("Doesn't pay for itself"));
+
+    // Offline (saved copy / no functions): example instead
+    w.fetch = async () => { throw new Error("network"); };
+    w.location.hash = "#/tool/shot-prompts";
+    await tick();
+    $('[name="product"]').value = "Honey";
+    $("#tool-root form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+    await waitFor(() => $(".tool-output").innerHTML.includes("Example output"));
+    check("offline AI tool explains and shows the example", $(".tool-output").textContent.includes("live website") && $(".tool-output").innerHTML.includes("Example output"));
+    w.close();
+  }
+
+  // ── 5. Tools in preview mode ──────────────────────────────────────────
+  console.log("Tools (preview mode):");
+  {
+    const { w } = makeDom({ demo: true });
+    bootApp(w);
+    await tick(); await tick();
+    w.location.hash = "#/tools";
+    await tick();
+    const app = () => w.document.querySelector("#app").innerHTML;
+    check("tools open in preview mode", app().includes("tool-card") && app().includes('class="sidebar"'));
     w.close();
   }
 
