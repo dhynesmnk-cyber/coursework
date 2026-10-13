@@ -192,6 +192,23 @@ console.error = () => {}; // the failure-path tests log expected errors
 
   const again = await status(event({ query: { id: r.jobId } }));
   check("finished job is deleted after it's read", parse(again).status === "pending", parse(again));
+  const left = (await directStore().list({ prefix: `tools/jobs/${r.jobId}/` })).blobs;
+  check("both job keys are removed", left.length === 0, left.map((b) => b.key));
+
+  // Mid-flight: the start key exists, the result key doesn't yet.
+  let release;
+  const gate = new Promise((res) => { release = res; });
+  claude.setClientForTests(fakeClient(async () => { await gate; return textResp(blogOut); }));
+  const midId = newJobId();
+  const running = runBg(event({ method: "POST", body: { jobId: midId, tool: "blog-writer", input: { business: "A", topic: "B" } }, headers: { "x-nf-client-connection-ip": "2.2.2.2" } }));
+  await new Promise((res) => setTimeout(res, 150));
+  const mid = parse(await status(event({ query: { id: midId } })));
+  check("a job in progress reads as running", mid.status === "running" && mid.tool === "blog-writer", mid);
+  release();
+  await running;
+  const end = parse(await status(event({ query: { id: midId } })));
+  check("then as done, from a separate write-once key", end.status === "done", end);
+  claude.setClientForTests(fc);
 
   const dupId = newJobId();
   await runBg(event({ method: "POST", body: { jobId: dupId, tool: "blog-writer", input: { business: "A", topic: "B" } } }));

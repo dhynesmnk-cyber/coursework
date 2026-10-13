@@ -1,8 +1,12 @@
 // tool-run-background.js — runs one AI tool job. The "-background" suffix
 // makes Netlify answer the browser with 202 straight away and give this
 // function up to 15 minutes, so long generations never hit the 30-second
-// limit. Progress and the result go to Blobs at tools/jobs/<jobId>, which
-// the browser polls through tool-status.
+// limit. The browser polls tool-status for the outcome.
+//
+// Each job writes two keys, each exactly once: tools/jobs/<id>/start when
+// it begins and tools/jobs/<id>/result when it ends. Blobs makes new keys
+// visible immediately but can take up to 60 seconds to show an update, so
+// never rewriting a key keeps polling prompt.
 //
 // POST { jobId: <uuid v4 from the browser>, tool: "blog-writer" | "shot-prompts" | "leads" | "pitch", input: {...} }
 import { store, parseBody } from "./utils/helpers.js";
@@ -11,7 +15,7 @@ import { validateWith } from "./utils/ai/validate.js";
 import { aiEnabled, claimRun, releaseRun, visitorId, pruneUsage } from "./utils/limits.js";
 import { aiConfigured, friendlyError } from "./utils/claude.js";
 
-const UUID_RE =/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const MAX_BODY = 240 * 1024; // background functions take small payloads only
 
 export const handler = async (event) => {
@@ -21,14 +25,15 @@ export const handler = async (event) => {
   if (typeof body.jobId !== "string" || !UUID_RE.test(body.jobId)) return; // nowhere to report
 
   const s = store(event);
-  const key = `tools/jobs/${body.jobId}`;
+  const prefix = `tools/jobs/${body.jobId}/`;
   const startedAt = Date.now();
   const tool = typeof body.tool === "string" ? body.tool : "";
 
   // onlyIfNew: a repeated submit of the same job is ignored rather than run twice.
-  const created = await s.setJSON(key, { status: "running", tool, startedAt }, { onlyIfNew: true });
+  const created = await s.setJSON(prefix + "start", { tool, startedAt }, { onlyIfNew: true });
   if (!created.modified) return;
-  const finish = (data) => s.setJSON(key, Object.assign({ tool, startedAt, finishedAt: Date.now() }, data));
+  const finish = (data) =>
+    s.setJSON(prefix + "result", Object.assign({ tool, startedAt, finishedAt: Date.now() }, data), { onlyIfNew: true });
 
   const mod = Object.prototype.hasOwnProperty.call(AI_TOOLS, tool) ? AI_TOOLS[tool] : null;
   if (!mod) return finish({ status: "error", code: "unknown_tool", error: "Unknown tool." });

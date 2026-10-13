@@ -33,7 +33,8 @@
       }
       const d = Array.isArray(e.string_list_data) ? e.string_list_data[0] : null;
       if (!d) { skipped++; return; }
-      const href = typeof d.href === "string" ? d.href : "";
+      // Only link to Instagram itself; the file is the visitor's, but stay safe.
+      const href = typeof d.href === "string" && /^https:\/\/(www\.)?instagram\.com\//i.test(d.href) ? d.href : "";
       const fromHref = href.replace(/\/+$/, "").split("/").pop() || "";
       const username = String(d.value || e.title || fromHref || "").trim();
       if (!username) { skipped++; return; }
