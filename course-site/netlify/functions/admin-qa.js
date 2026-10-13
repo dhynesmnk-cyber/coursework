@@ -13,13 +13,13 @@ export const handler = async (event) => {
     (event.headers && (event.headers["x-admin-token"] || event.headers["X-Admin-Token"])) || "";
   if (!safeToken(provided, expected)) return fail("unauthorized", 401);
 
-  const s = store();
+  const s = store(event);
 
   if (event.httpMethod === "GET") {
     const { blobs } = await s.list({ prefix: "qa/" });
     const threads = [];
     for (const b of blobs) {
-      const t = await s.getJSON(b.key, { type: "json" });
+      const t = await s.get(b.key, { type: "json" });
       if (t) threads.push({ ...t, key: b.key });
     }
     threads.sort((a, b) => b.createdAt - a.createdAt);
@@ -31,7 +31,7 @@ export const handler = async (event) => {
     if (typeof key !== "string" || !key.startsWith("qa/")) return fail("bad key");
     if (typeof reply !== "string" || !reply.trim()) return fail("empty reply");
 
-    const thread = await s.getJSON(key, { type: "json" });
+    const thread = await s.get(key, { type: "json" });
     if (!thread) return fail("thread not found", 404);
 
     thread.replies = thread.replies || [];

@@ -14,10 +14,10 @@ export const handler = async (event) => {
     if (!secret) return fail("server not configured (STRIPE_SECRET_KEY)", 500);
     const stripe = new Stripe(secret);
 
-    const s = store();
+    const s = store(event);
 
     // Idempotency: one code per paid session, ever.
-    const existing = await s.getJSON(`sessions/${sessionId}`, { type: "json" });
+    const existing = await s.get(`sessions/${sessionId}`, { type: "json" });
     if (existing && existing.code) return json(existing);
 
     const session = await stripe.checkout.sessions.retrieve(sessionId, {

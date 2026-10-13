@@ -39,6 +39,16 @@
   }
 
   async function api(path, opts) {
+    opts = opts || {};
+    // Signed-in calls carry the Identity JWT so functions can see the user
+    // (context.clientContext.user). jwt() refreshes an expired token.
+    const idUser = window.netlifyIdentity && window.netlifyIdentity.currentUser();
+    if (idUser && typeof idUser.jwt === "function") {
+      try {
+        const token = await idUser.jwt();
+        opts.headers = Object.assign({}, opts.headers, { Authorization: "Bearer " + token });
+      } catch (e) { /* fall through unauthenticated; the function will 401 */ }
+    }
     const res = await fetch(API + path, opts);
     const text = await res.text();
     let data = null;

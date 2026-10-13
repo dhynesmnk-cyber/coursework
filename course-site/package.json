@@ -5,10 +5,11 @@
   "type": "module",
   "description": "Self-paced HTML course site for AI Without the Sales Pitch (Netlify: Identity + Functions + Blobs + Forms).",
   "dependencies": {
-    "@netlify/blobs": "^8.1.0",
+    "@anthropic-ai/sdk": "^0.133.0",
+    "@netlify/blobs": "^11.1.4",
     "stripe": "^17.5.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   }
 }

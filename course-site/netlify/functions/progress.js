@@ -8,11 +8,11 @@ export const handler = async (event, context) => {
   const user = identityUser(context);
   if (!user) return fail("Please sign in first.", 401);
 
-  const s = store();
+  const s = store(event);
   const key = `progress/${user.id}`;
 
   if (event.httpMethod === "GET") {
-    const data = (await s.getJSON(key, { type: "json" })) || {};
+    const data = (await s.get(key, { type: "json" })) || {};
     return json(data);
   }
 
