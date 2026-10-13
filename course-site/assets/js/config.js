@@ -13,11 +13,14 @@ window.COURSE_CONFIG = {
   // ── Branding ──────────────────────────────────────────────────────────
   brand: {
     // Your business name, shown in the header and on the certificate.
-    sellerName: "Your Business Name",           // EDIT ME
+    sellerName: "C&P Consulting",               // EDIT ME
     courseTitle: "AI Without the Sales Pitch",
     courseTagline:
       "A self-paced, plain-language AI course for small and medium businesses. No hype. No jargon. Ten documents you can use on Monday.",
-    supportEmail: "you@yourbusiness.com.au",    // EDIT ME (shown to learners)
+    supportEmail: "d.hynes.mnk@gmail.com",      // EDIT ME (shown to learners)
+    // Who to contact, shown in the footer, the sidebar and on tool pages.
+    contactName: "David Hynes",
+    linkedin: "https://www.linkedin.com/in/david-hynes-b22608249",
     // Logo: leave null for the text wordmark, or set a path like "assets/img/logo.svg".
     logo: null,                                  // EDIT ME (optional)
   },
@@ -45,8 +48,8 @@ window.COURSE_CONFIG = {
   // of every tool page. Enquiries arrive through Netlify Forms (form name
   // "custom-build"), emailed to you once Forms notifications are on.
   customBuild: {
-    name: "Dave",   // EDIT ME — who builds the custom versions
-    email: "",      // optional — only shown if the form can't be sent
+    name: "Dave",   // EDIT ME: who builds the custom versions
+    email: "d.hynes.mnk@gmail.com", // shown under the form and if it can't be sent
   },
 
   // ── Course mechanics ──────────────────────────────────────────────────

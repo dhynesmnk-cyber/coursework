@@ -19,8 +19,9 @@ Flip the flag and redeploy; nothing else changes. Use preview mode for showing t
 
 Edit `assets/js/config.js`:
 
-- `brand.sellerName` — your business name (header, certificate, Q&A replies).
-- `brand.supportEmail` — shown to learners for purchase problems.
+- `brand.sellerName`: your business name (header, page title, certificate, Q&A replies). Currently "C&P Consulting".
+- `brand.supportEmail`: the contact email shown in the footer, the sidebar and on every tool page, and to learners for purchase problems.
+- `brand.contactName` and `brand.linkedin`: the person and LinkedIn profile shown next to that email. Leave `linkedin` empty to hide the link.
 - `brand.logo` — optional path to an SVG/PNG.
 - `colors.primary` / `colors.accent` — any CSS colours.
 - `stripe.individualPrice` / `stripe.businessPrice` — display prices on the landing page (e.g. `"A$99"`, `"A$349"`).

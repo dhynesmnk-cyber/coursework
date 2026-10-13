@@ -769,6 +769,8 @@ input[type="file"] { display: block; font: inherit; font-size: 14px; margin-bott
 .custom-cta strong { color: var(--ink); }
 .custom-cta .link-btn { font-size: 14px; margin-left: 4px; }
 .cta-form { margin-top: 14px; }
+.cta-direct { margin: 6px 0 0 !important; }
+.side-contact { margin: 26px 12px 0; font-size: 12.5px; color: var(--muted); line-height: 1.6; word-break: break-word; }
 .cta-form .field-label { color: var(--ink); }
 input[type="email"] {
   width: 100%; padding: 11px 14px;

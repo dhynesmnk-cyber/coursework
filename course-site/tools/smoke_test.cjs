@@ -56,6 +56,9 @@ const tick = () => new Promise((r) => setTimeout(r, 60));
     check("ten docs listed", (html.match(/doc-pill/g) || []).length >= 10);
     check("pricing cards present", html.includes("Whole business") && html.includes("Individual"));
     check("no [object Object] leaks", !html.includes("[object Object]"));
+    check("landing footer shows C&P Consulting and contact links", html.includes("by C&amp;P Consulting") && html.includes('href="mailto:d.hynes.mnk@gmail.com"') && html.includes('href="https://www.linkedin.com/in/david-hynes-b22608249"'));
+    check("page title names C&P Consulting", w.document.title.includes("C&P Consulting"));
+    check("landing explains the Feynman approach", html.includes("Feynman Technique"));
     w.close();
   }
 
@@ -141,6 +144,24 @@ const tick = () => new Promise((r) => setTimeout(r, 60));
     w.location.hash = "#/profile";
     await tick();
     check("profile prefilled", app().includes('value="Test Plumbing Pty Ltd"'));
+
+    // every class teaches the Feynman way; every document opens plainly
+    let allClasses = true;
+    for (let i = 0; i < 6; i++) {
+      w.location.hash = "#/class/" + i;
+      await tick();
+      const h = app();
+      if (!(h.includes("The short version") && h.includes("Explain it back") && h.includes('data-field="explainBack"'))) allClasses = false;
+    }
+    check("all six classes have the short version, explain-it-back, and the worksheet field", allClasses);
+    let allDocs = true;
+    for (let i = 0; i < 10; i++) {
+      w.location.hash = "#/doc/" + i;
+      await tick();
+      if (!/In plain terms|The policy in one breath|The universal pattern/.test(app())) allDocs = false;
+    }
+    check("all ten documents open with a plain-terms summary", allDocs);
+    check("sidebar shows the contact links", app().includes('class="side-contact"') && app().includes("d.hynes.mnk@gmail.com"));
 
     // tools inside the course
     w.location.hash = "#/class/3";
@@ -307,7 +328,7 @@ const tick = () => new Promise((r) => setTimeout(r, 60));
       w.location.hash = "#/tool/" + t.slug;
       await tick();
       const box = $(".custom-cta");
-      check(`custom-version box on ${t.slug}`, box && box.getAttribute("data-tool") === t.slug && box.textContent.includes("Dave builds custom tools"));
+      check(`custom-version box on ${t.slug}`, box && box.getAttribute("data-tool") === t.slug && box.textContent.includes("Dave builds custom tools") && box.innerHTML.includes("linkedin.com/in/david-hynes-b22608249"));
     }
     w.location.hash = "#/tools";
     await tick();

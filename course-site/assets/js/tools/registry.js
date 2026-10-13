@@ -226,8 +226,17 @@
 
   // ── "Want a custom version?" box at the foot of each tool page ────────
   function builder() {
-    const cfg = (window.COURSE_CONFIG && window.COURSE_CONFIG.customBuild) || {};
-    return { name: cfg.name || "Dave", email: cfg.email || "" };
+    const c = window.COURSE_CONFIG || {};
+    const cfg = c.customBuild || {};
+    return { name: cfg.name || "Dave", email: cfg.email || "", linkedin: (c.brand && c.brand.linkedin) || "" };
+  }
+
+  function directLinks() {
+    const b = builder();
+    const parts = [];
+    if (b.email) parts.push('<a href="mailto:' + ui.esc(b.email) + '">' + ui.esc(b.email) + "</a>");
+    if (b.linkedin) parts.push('<a href="' + ui.esc(b.linkedin) + '" target="_blank" rel="noopener">LinkedIn</a>');
+    return parts.length ? '<p class="fine cta-direct">Or contact ' + ui.esc(b.name) + " directly: " + parts.join(" &middot; ") + "</p>" : "";
   }
 
   T.customCta = function (tool) {
@@ -238,6 +247,7 @@
         <p><strong>${tool ? "Want a version built for your business?" : "Need a tool these don't cover?"}</strong>
           ${who} builds custom tools like ${tool ? "this one" : "these"}, set up around your services, your data and the way you work.
           <button type="button" class="link-btn cta-open">Ask ${who} about it</button></p>
+        ${directLinks()}
         <form class="cta-form hidden" novalidate>
           <input type="text" name="bot-field" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="field-row">

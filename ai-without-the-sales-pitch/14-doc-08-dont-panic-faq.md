@@ -5,42 +5,118 @@
 
 ---
 
+## In plain terms
+
+AI tools are fast, confident drafting assistants. They're useful, they make mistakes, and they don't think. Use them for first drafts, keep work data on work accounts, and check anything with a name, number or date before it goes out. Everything below is a longer version of that.
+
 ## 1. Is AI going to take my job?
 
-Parts of jobs, yes; whole jobs like yours, mostly no, and not on the timetable the headlines imply. What AI does well is produce first drafts, summaries and structured text, so the portions of your work that are routine writing and reformatting will get faster, and some of that time will be expected back by whoever signs your pay. What it cannot do is show up, take responsibility, read the room with an actual customer, notice that the numbers smell wrong, or be the person someone calls when it matters. The honest risk is not a robot replacing you; it is a competitor using these tools to serve customers faster while you do not, which is a reason to learn the tools rather than fear them. The people most exposed are those whose entire job is producing unverified text at volume, and even there the failures we have watched this decade (the Deloitte refund, Klarna rehiring humans) show quality collapsing when humans are removed too fast. Learn to use the tools well and check their work; that combination is the most durable position available.
+**Short answer:** parts of jobs, yes. Whole jobs like yours, mostly no, and not on the timetable the headlines suggest.
+
+AI is good at first drafts, summaries and tidying text. So the parts of your work that are routine writing and reformatting will get faster, and whoever signs your pay will expect some of that time back.
+
+What it can't do: turn up, take responsibility, read the room with a real customer, notice that the numbers smell wrong, or be the person someone rings when it matters.
+
+The honest risk isn't a robot replacing you. It's a competitor using these tools to serve customers faster while you don't. That's a reason to learn the tools, not fear them.
+
+The people most exposed are those whose whole job is producing unchecked text in volume. Even there, the failures of this decade show quality collapsing when people are removed too fast: Deloitte refunded part of a government report, and Klarna started hiring people back. Learning to use the tools well and check their work is the most durable position available.
 
 ## 2. Can the AI see my screen?
 
-Not by default, no. A chatbot sees only what you send it: your typed message, files you attach, images you upload, and (in the ecosystem products) the emails, documents and calendar items its connectors are granted access to on your work account. Two genuine exceptions to know about: voice and screen-sharing features (if you explicitly start a voice session or share your screen with the tool, it processes what it receives), and the ecosystem assistants (Microsoft 365 Copilot and Gemini for Workspace can read across your work mail and files, which is their selling point, bounded by the permissions your IT admin sets). Nothing is quietly screenshotting you in the background of a normal chat session. The correct worry is not surveillance; it is what you voluntarily paste, which is what Documents 3 and 5 are about.
+**Short answer:** not by default.
+
+A chatbot sees only what you send it: what you type, files you attach, images you upload, and, in the office-suite products, the emails, documents and calendar items it's been given access to on your work account.
+
+Two real exceptions:
+- **Voice and screen-sharing features.** If you deliberately start a voice session or share your screen with the tool, it processes what you share.
+- **Office-suite assistants.** Microsoft 365 Copilot and Gemini for Workspace can read across your work email and files. That's their selling point, and it's limited by the permissions your IT admin sets.
+
+Nothing is quietly screenshotting you in the background of a normal chat. The thing to watch isn't surveillance, it's what you choose to paste, which is what Documents 3 and 5 are about.
 
 ## 3. If I put my client list in, does the AI company now have my client list?
 
-For as long as their systems keep it, yes, in a real sense: it was transmitted to their servers, stored in your chat history and their logs, and handled under whatever their policy and your plan tier say. On a free consumer account that could mean retention for a period after you delete it, possible use in model improvement unless you opted out, and possible visibility to their reviewers under flagged circumstances. On a business tier it means retention governed by a contract, no training on your content, and deletion obligations when you ask or leave. On a local tool it means the list never went anywhere. What does not happen is the sci-fi version: your list does not become queryable by other users or get sold as a database. The practical answer is the one in Document 5: bulk personal information belongs in contracted tools or local tools, and nowhere else.
+**Short answer:** for as long as their systems keep it, yes.
+
+Typing into a chatbot is like posting a letter to a company overseas that keeps a copy on file. What happens to that copy depends on your account:
+- **Free consumer account:** it may be kept for a while after you delete it, may be used to improve their models unless you opted out, and may be seen by their reviewers in some circumstances.
+- **Business account:** how long it's kept is set by contract, it isn't used for training, and it must be deleted when you ask or leave.
+- **Local tool:** the list never went anywhere.
+
+What doesn't happen is the science-fiction version: your list doesn't become searchable by other users or get sold as a database.
+
+The practical answer is in Document 5: personal information in bulk belongs in contracted tools or local tools, and nowhere else.
 
 ## 4. Why does it sometimes make stuff up?
 
-Because the machine is a pattern-matcher optimised to produce the most plausible continuation of your text, and plausible is not the same as true. When its training data contains lots of examples of what a good answer looks like but nothing reliable about your specific fact, it fills the gap with the shape of an answer: a confident sentence, a realistic-looking citation, a number in the right range. There is no internal alarm that distinguishes "I know this" from "this is what that kind of sentence looks like," which is why the inventions arrive with total confidence. This is a structural feature of how these models work, not a bug that an update will fully delete, though newer products reduce it with search and grounding features. Your defence is mechanical: supply the real material in the prompt, instruct it to answer only from what you gave, and check every name, number, date and citation before the output leaves the building.
+**Short answer:** because it's built to sound right, not to be right.
+
+Picture a student sitting an exam on a topic they never studied. They've read plenty of top-mark essays, so they know exactly what a good answer sounds like, and they write one. It reads beautifully. Parts of it are invented.
+
+An AI model predicts the most plausible next words. When it hasn't seen reliable information about your exact question, it produces the shape of an answer: a confident sentence, a realistic-looking reference, a number in roughly the right range. It has no inner alarm that tells "I know this" apart from "this is what that kind of sentence looks like", so the inventions arrive with total confidence.
+
+This is how these tools work, not a bug an update will fully remove, although newer products reduce it with web search and by sticking to documents you supply.
+
+**Your defence:** give it the real material, tell it to answer only from what you gave it, and check every name, number, date and reference before anything leaves the building.
 
 ## 5. Do I need to disclose that I used AI in my work?
 
-There is no general Australian law requiring you to label ordinary business documents as AI-assisted, but there are four situations where disclosure or restraint is required or strongly advised. First, your contract: some client agreements restrict AI use, and breaching one is a commercial and legal problem (this is precisely how Deloitte ended up refunding a government report). Second, regulated advice: legal, accounting, medical and engineering output must be verified and owned by a qualified person, and presenting unverified AI text as professional advice can breach your professional obligations regardless of any AI-specific rule. Third, automated decisions about people: from 10 December 2026, privacy policies must describe significant automated decision-making, and if AI substantially shapes decisions about customers or employees, that is disclosable territory. Fourth, trust: when a client asks, answer honestly and specifically, because being caught implying human verification that never happened is a relationship-ending event, while "we draft with AI tools and a qualified person checks everything" is a perfectly respectable sentence. Default policy in one line: disclose on request, always, and proactively for advice-grade work.
+**Short answer:** there's no general Australian law requiring it, but four situations call for disclosure or care.
+
+1. **Your contract.** Some client agreements restrict AI use. Breaching one is a commercial and legal problem, and it's exactly how Deloitte ended up refunding part of a government report.
+2. **Regulated advice.** Legal, accounting, medical and engineering work must be checked and owned by a qualified person. Presenting unchecked AI text as professional advice can breach your professional obligations, whatever the AI rules say.
+3. **Automated decisions about people.** From 10 December 2026, privacy policies must describe significant automated decision-making. If AI substantially shapes decisions about customers or employees, that has to be disclosed.
+4. **Trust.** When a client asks, answer honestly and specifically. Being caught implying a person checked something they didn't ends relationships. "We draft with AI tools and a qualified person checks everything" is a perfectly respectable sentence.
+
+**In one line:** always disclose when asked, and disclose up front for advice-grade work.
 
 ## 6. Is my employer reading my chats with the AI?
 
-On tools the business provides and administers: assume yes, they can. Work accounts on Microsoft 365 Copilot, Google Workspace, ChatGPT Business or Claude Team give administrators the ability to manage, audit and in many configurations review usage, exactly like work email; that is part of what the business tier is. On your personal account on your personal phone, your employer generally cannot see the content, though on business-owned devices monitoring software is a separate question with a separate answer. The healthy rule is the same one that applies to work email: nothing on a work account or work device that you would not want your manager to read, and no work material on personal accounts (that is shadow AI, Document 3). If you are unsure what monitoring applies to you, ask; a legitimate employer can tell you their policy in two sentences.
+**Short answer:** on tools the business provides, assume they can.
+
+- **Work accounts** on Microsoft 365 Copilot, Google Workspace, ChatGPT Business or Claude Team let administrators manage, audit and often review usage, exactly like work email. That's part of what a business account is.
+- **Your personal account on your personal phone:** your employer generally can't see the content. On business-owned devices, monitoring software is a separate question with a separate answer.
+
+The healthy rule is the same as for work email: nothing on a work account or work device that you wouldn't want your manager to read, and no work material on personal accounts (that's shadow AI, Document 3). If you're unsure what monitoring applies to you, ask. A legitimate employer can explain its policy in two sentences.
 
 ## 7. Is it safe to let AI write emails I send to customers?
 
-Drafting, yes; sending unchecked, no. AI is genuinely good at producing a competent first draft of a customer email faster than you can, and the quality gap between its draft and yours often favours it on routine messages. The failure modes are specific and checkable: it can invent a promise (a discount, a deadline, a warranty), get a name or number wrong, or strike a tone that reads as off for your relationship with that customer. Air Canada learned the hard way that an organisation owns what its AI tells customers, so the rule is one read-through before send, checking promises, figures and names against reality. Keep a human in the loop on anything consequential (complaints, money, cancellations, anything a lawyer might one day read aloud) and treat the tool as a fast typist, not your account manager.
+**Short answer:** drafting, yes. Sending unchecked, no.
+
+AI is genuinely good at a competent first draft of a customer email, faster than you, and on routine messages the draft is often better than ours would be.
+
+The ways it goes wrong are specific, and you can check for them:
+- it can invent a promise, such as a discount, deadline or warranty;
+- it can get a name or number wrong;
+- it can strike a tone that doesn't suit your relationship with that customer.
+
+Air Canada learned the hard way that a business owns what its AI tells customers. So: one read-through before sending, checking promises, figures and names. Keep a person involved in anything consequential, such as complaints, money, cancellations, or anything a lawyer might one day read aloud. Treat the tool as a fast typist, not your account manager.
 
 ## 8. Will these tools keep getting smarter until they run everything?
 
-They will keep improving; the pace and ceiling are genuinely unknown, and anyone quoting you a confident date for machine-run everything is selling something. What is observable is that progress comes in jumps on some tasks (coding, document work) and stalls on others (reliability, long-horizon judgement, the last mile of verification). Even a dramatically smarter tool stays a tool in the sense that matters to you: someone must decide the objective, supply the context, own the output and answer for the consequences, and businesses, professions and the law will keep requiring a responsible human at that point. For your working life, the sensible posture is the same one every trade took toward power tools: learn it, respect what it can do, keep your hand on the switch. The people displaced by power drills were not the ones who picked them up.
+**Short answer:** they'll keep improving. Nobody knows how far or how fast, and anyone quoting a confident date is selling something.
 
-## 9. What can I actually trust it to do today, without babysitting every line?
+What we can see is that progress comes in jumps on some tasks (coding, document work) and stalls on others (reliability, long-range judgement, the last mile of checking).
 
-Low-stakes transformation tasks where you will see the result anyway: reformatting, summarising for your own eyes, brainstorming, plain-language translation of jargon, first drafts you are going to rewrite. Everything with a number, a name, a date, a legal rule or a customer attached needs the check, and the check is usually faster than doing the task from scratch, which is why the honest productivity claim is "faster with review" rather than "done for you." A good mental test: if this output were wrong, would anyone be harmed, embarrassed or out of pocket? If yes, it gets human eyes; if no, let it rip and enjoy the time saved. That test, applied consistently, is a complete personal AI policy.
+Even a much smarter tool stays a tool in the way that matters to you. Someone has to decide the goal, supply the background, own the result and answer for the consequences. Businesses, professions and the law will keep requiring a responsible person at that point.
+
+For your working life, take the attitude every trade took to power tools: learn it, respect what it can do, keep your hand on the switch. The people displaced by power drills weren't the ones who picked them up.
+
+## 9. What can I actually trust it to do today without checking every line?
+
+**Short answer:** low-stakes jobs where you'll see the result anyway.
+
+Reformatting, summarising for your own eyes, brainstorming, turning jargon into plain language, and first drafts you're going to rewrite.
+
+Anything with a number, a name, a date, a legal rule or a customer attached needs the check. The check is usually faster than doing the task from scratch, which is why the honest claim is "faster with a review", not "done for you".
+
+**A good test:** if this output were wrong, would anyone be harmed, embarrassed or out of pocket? If yes, a person reads it. If no, go for it and enjoy the time saved. Applied consistently, that test is a complete personal AI policy.
 
 ## 10. Everyone at work is using it and I'm behind. How do I catch up this week?
 
-One hour, spread across three evenings, does it. Evening one: create an account on the tool your workplace approves (ask who that is; if nobody knows, that is your Document 3 conversation), paste in the system prompt template from Document 1 for your type of business, and run one real task through it: tomorrow's email, today's messy notes. Evening two: take the cheat sheet (Document 4) and do one task from each of the six patterns on real work material, noticing which two are worth keeping. Evening three: do the settings pass from Document 5 on your account, then set up one Project or Gem with your three most-reused reference documents in it. After that, the habit is the skill: use it once a day on something you were going to do anyway, and check the output like you would check a keen apprentice's work, because that is exactly what it is.
+**Short answer:** one hour, spread over three evenings.
+
+- **Evening one:** set up an account on the tool your workplace approves. (Ask who decides; if nobody knows, that's your Document 3 conversation.) Paste in the Document 1 template for your type of business, and run one real task through it: tomorrow's email, or today's messy notes.
+- **Evening two:** take the cheat sheet (Document 4) and do one task from each of its six sections on real work, noticing which two are worth keeping.
+- **Evening three:** do the settings check from Document 5 on your account, then set up one Project or Gem with your three most-used reference documents in it.
+
+After that, the habit is the skill. Use it once a day on something you were going to do anyway, and check its work the way you'd check a keen apprentice's, because that's exactly what it is.

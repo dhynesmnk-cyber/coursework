@@ -30,8 +30,19 @@ A six-class community education programme for non-technical adults: small busine
 | `17-facilitator-notes.md` | Facilitator notes: pacing, FAQs, objection handling |
 | `18-research-notes-and-sources.md` | Research notes and citations underpinning the package |
 
+## How the material teaches: the Feynman Technique
+
+Everything here follows one test, borrowed from the physicist Richard Feynman: if you can't explain something simply, you don't understand it yet. So every class:
+
+1. **Opens with "The short version":** the whole idea in two or three sentences anyone could follow.
+2. **Introduces each idea through an everyday picture first,** then names the technical term and translates it. The pictures are shared across the course (the model's desk, the bluffing student, the engine and the car, the temp's job sheet) and listed in `17-facilitator-notes.md`.
+3. **Says where each picture breaks,** so analogies help without misleading.
+4. **Ends with "Explain it back":** the learner explains the idea to a colleague in three sentences, with no jargon, and rereads whatever they stumbled on.
+
+The ten documents open with an "In plain terms" summary and keep their templates, click-paths and verified facts exact.
+
 ## How to use this package
 
-- The class files are learner-facing teaching chapters for the self-paced course: outcomes up front, plain explanations with worked examples, a myth section, a solo exercise, a self-check and a plain-English word list. The facilitator-facing pacing and objection-handling material lives in `17-facilitator-notes.md`, and the original marketing blurbs in `19-registration-blurbs.md`.
+- The class files are learner-facing teaching chapters for the self-paced course: outcomes up front, the short version, picture-first explanations with worked examples, a myth section, a solo exercise, an explain-it-back check, a self-check and a plain-English word list. The facilitator-facing pacing, picture kit and objection-handling material lives in `17-facilitator-notes.md`, and the original marketing blurbs in `19-registration-blurbs.md`.
 - The ten documents are participant-facing: formatted to hand out, pin to an intranet, or paste into a staff handbook. Each states which platforms it applies to and notes platform differences.
 - Document 6 (comparison matrix) and Document 5 (data security) contain time-sensitive facts. Both carry a "last verified" date and a quarterly review reminder.
